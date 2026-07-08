@@ -17,3 +17,4 @@ fun cuentaRegresiva(desde: Int): Flow<Int> = flow {
         delay(1000)
     }
 }
+//una disculpa pero tuve un error, pero esta es el ejercicio 2.2
