@@ -34,19 +34,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cinekmp.shared.generated.resources.Res
+import cinekmp.shared.generated.resources.back
+import cinekmp.shared.generated.resources.label_title
+import cinekmp.shared.generated.resources.label_artist
+import cinekmp.shared.generated.resources.label_credits
+import cinekmp.shared.generated.resources.label_date
+import cinekmp.shared.generated.resources.label_department
+import cinekmp.shared.generated.resources.label_dimensions
+import cinekmp.shared.generated.resources.label_medium
+import cinekmp.shared.generated.resources.label_repository
 import coil3.compose.AsyncImage
 import com.jetbrains.kmpapp.data.MuseumObject
 import com.jetbrains.kmpapp.screens.EmptyScreenContent
-import kmp_app_template.shared.generated.resources.Res
-import kmp_app_template.shared.generated.resources.back
-import kmp_app_template.shared.generated.resources.label_artist
-import kmp_app_template.shared.generated.resources.label_credits
-import kmp_app_template.shared.generated.resources.label_date
-import kmp_app_template.shared.generated.resources.label_department
-import kmp_app_template.shared.generated.resources.label_dimensions
-import kmp_app_template.shared.generated.resources.label_medium
-import kmp_app_template.shared.generated.resources.label_repository
-import kmp_app_template.shared.generated.resources.label_title
+
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
