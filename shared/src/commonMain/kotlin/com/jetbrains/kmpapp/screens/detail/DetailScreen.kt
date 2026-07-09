@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cinekmp.shared.generated.resources.Res
 import cinekmp.shared.generated.resources.back
+import cinekmp.shared.generated.resources.label_title
 import cinekmp.shared.generated.resources.label_artist
 import cinekmp.shared.generated.resources.label_credits
 import cinekmp.shared.generated.resources.label_date
@@ -43,10 +44,10 @@ import cinekmp.shared.generated.resources.label_department
 import cinekmp.shared.generated.resources.label_dimensions
 import cinekmp.shared.generated.resources.label_medium
 import cinekmp.shared.generated.resources.label_repository
-import cinekmp.shared.generated.resources.label_title
 import coil3.compose.AsyncImage
 import com.jetbrains.kmpapp.data.MuseumObject
 import com.jetbrains.kmpapp.screens.EmptyScreenContent
+
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
