@@ -1,7 +1,5 @@
 package com.jetbrains.kmpapp
 
-import platform.UIKit.UIDevice
+import android.os.Build
 
 actual fun infoDispositivo(): String {
-    return UIDevice.currentDevice.model
-}
