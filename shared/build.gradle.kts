@@ -64,6 +64,9 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
         }
     }
+    sourceSets.commonTest.dependencies {
+        implementation(kotlin("test"))
+    }
 }
 
 compose.desktop {
