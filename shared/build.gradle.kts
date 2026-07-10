@@ -62,6 +62,12 @@ kotlin {
             implementation(libs.coil.network.ktor)
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
+            
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
         }
     }
 }
