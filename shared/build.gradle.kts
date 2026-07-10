@@ -9,7 +9,6 @@ plugins {
 }
 
 kotlin {
-    jvm()
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -63,12 +62,9 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
         }
-    }
-}
-
-compose.desktop {
-    application {
-        mainClass = "com.jetbrains.kmpapp.KotlinDrillsKt"
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
     }
 }
 
