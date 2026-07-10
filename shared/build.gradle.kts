@@ -9,7 +9,6 @@ plugins {
 }
 
 kotlin {
-    jvm()
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -70,11 +69,6 @@ kotlin {
     }
 }
 
-compose.desktop {
-    application {
-        mainClass = "com.jetbrains.kmpapp.KotlinDrillsKt"
-    }
-}
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
