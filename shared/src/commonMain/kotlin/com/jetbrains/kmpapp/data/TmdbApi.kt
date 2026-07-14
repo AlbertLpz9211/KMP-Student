@@ -1,5 +1,6 @@
 package com.jetbrains.kmpapp.data
 
+import com.jetbrains.kmpapp.data.dto.MovieDetailDto
 import com.jetbrains.kmpapp.data.dto.MoviePageDto
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
@@ -33,6 +34,25 @@ class TmdbApi(private val apiKey: String, engine: HttpClientEngine? = null) {
 
     suspend fun populares(pagina: Int = 1): MoviePageDto =
         client.get("movie/popular") {
+            parameter("page", pagina)
+        }.body()
+
+    suspend fun mejorValoradas(pagina: Int = 1): MoviePageDto =
+        client.get("movie/top_rated") {
+            parameter("page", pagina)
+        }.body()
+
+    suspend fun enCartelera(pagina: Int = 1): MoviePageDto =
+        client.get("movie/now_playing") {
+            parameter("page", pagina)
+        }.body()
+
+    suspend fun detalle(id: Int): MovieDetailDto =
+        client.get("movie/$id").body()
+
+    suspend fun buscar(query: String, pagina: Int = 1): MoviePageDto =
+        client.get("search/movie") {
+            parameter("query", query)
             parameter("page", pagina)
         }.body()
 }
