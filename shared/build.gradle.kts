@@ -18,6 +18,13 @@ val localProperties = Properties().apply {
 val tmdbApiKey = localProperties.getProperty("tmdb.apikey") ?: ""
 
 kotlin {
+    // Accedemos al target de android que el plugin crea automáticamente
+    targets.configureEach {
+        if (name == "android") {
+            // Aquí puedes añadir configuración específica si fuera necesario
+        }
+    }
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -77,6 +84,7 @@ kotlin {
         kotlin.srcDir(
             tasks.register("generateConfig") {
                 val outputDir = layout.buildDirectory.dir("generated/config")
+                val key = tmdbApiKey
                 outputs.dir(outputDir)
                 doLast {
                     val configFile = outputDir.get().file("com/jetbrains/kmpapp/Config.kt").asFile
@@ -86,7 +94,7 @@ kotlin {
                         package com.jetbrains.kmpapp
                         
                         object Config {
-                            const val TMDB_API_KEY = "$tmdbApiKey"
+                            const val TMDB_API_KEY = "$key"
                         }
                         """.trimIndent()
                     )
@@ -98,6 +106,7 @@ kotlin {
     sourceSets.commonTest.dependencies {
         implementation(kotlin("test"))
         implementation(libs.kotlinx.coroutines.test)
+        implementation(libs.ktor.client.mock)
     }
 }
 
