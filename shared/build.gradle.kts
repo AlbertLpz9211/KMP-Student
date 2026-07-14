@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -7,6 +8,14 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinxSerialization)
 }
+
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) {
+        file.inputStream().use { load(it) }
+    }
+}
+val tmdbApiKey = localProperties.getProperty("tmdb.apikey") ?: ""
 
 kotlin {
     listOf(
@@ -63,6 +72,29 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
         }
     }
+
+    sourceSets.commonMain.configure {
+        kotlin.srcDir(
+            tasks.register("generateConfig") {
+                val outputDir = layout.buildDirectory.dir("generated/config")
+                outputs.dir(outputDir)
+                doLast {
+                    val configFile = outputDir.get().file("com/jetbrains/kmpapp/Config.kt").asFile
+                    configFile.parentFile.mkdirs()
+                    configFile.writeText(
+                        """
+                        package com.jetbrains.kmpapp
+                        
+                        object Config {
+                            const val TMDB_API_KEY = "$tmdbApiKey"
+                        }
+                        """.trimIndent()
+                    )
+                }
+            }
+        )
+    }
+
     sourceSets.commonTest.dependencies {
         implementation(kotlin("test"))
         implementation(libs.kotlinx.coroutines.test)
