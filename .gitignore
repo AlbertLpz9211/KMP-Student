@@ -33,6 +33,7 @@ release/
 
 # ─────────────── Secretos y configuración local (API keys, etc.) ────────────
 # La API key de TMDB (Sesión 3) va en local.properties o en un .env, nunca en Git:
+shared/src/commonMain/kotlin/com/jetbrains/kmpapp/data/TmdbConfig.kt
 *.env
 .env.*
 secrets.properties

@@ -5,6 +5,8 @@ import com.jetbrains.kmpapp.data.KtorMuseumApi
 import com.jetbrains.kmpapp.data.MuseumApi
 import com.jetbrains.kmpapp.data.MuseumRepository
 import com.jetbrains.kmpapp.data.MuseumStorage
+import com.jetbrains.kmpapp.data.TmdbApi
+import com.jetbrains.kmpapp.data.TmdbConfig
 import com.jetbrains.kmpapp.screens.detail.DetailViewModel
 import com.jetbrains.kmpapp.screens.list.ListViewModel
 import io.ktor.client.HttpClient
@@ -28,9 +30,10 @@ val dataModule = module {
     }
 
     single<MuseumApi> { KtorMuseumApi(get()) }
+    single { TmdbApi(TmdbConfig.TMDB_API_KEY) } // Registramos nuestra nueva API
     single<MuseumStorage> { InMemoryMuseumStorage() }
     single {
-        MuseumRepository(get(), get()).apply {
+        MuseumRepository(get(), get(), get()).apply { // Pasamos la nueva API al repositorio
             initialize()
         }
     }

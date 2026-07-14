@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -7,6 +8,15 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinxSerialization)
 }
+
+// --- BLOQUE PARA LEER LA API KEY (SESIÓN 3) ---
+val properties = Properties()
+val localPropertiesFile = project.rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { properties.load(it) }
+}
+val tmdbApiKey = properties.getProperty("tmdb.apikey") ?: "TU_API_KEY_AQUI"
+// ----------------------------------------------
 
 kotlin {
     listOf(
@@ -66,6 +76,7 @@ kotlin {
     sourceSets.commonTest.dependencies {
         implementation(kotlin("test"))
         implementation(libs.kotlinx.coroutines.test)
+        implementation(libs.ktor.client.mock)
     }
 }
 
