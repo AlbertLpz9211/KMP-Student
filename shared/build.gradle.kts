@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -6,7 +7,15 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinxSerialization)
+    // Agregamos el plugin aquí una sola vez
+    id("com.github.gmazzo.buildconfig") version "4.1.1"
 }
+
+// Lógica de la API Key
+val localProperties = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
+}
+val tmdbKey = localProperties.getProperty("tmdb.apikey") ?: "LLAVE_NO_ENCONTRADA"
 
 kotlin {
     listOf(
@@ -70,4 +79,10 @@ kotlin {
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+}
+
+buildConfig {
+    // Vamos a ponerlo en el paquete base de tu app
+    packageName("com.jetbrains.kmpapp")
+    buildConfigField("String", "TMDB_API_KEY", "\"$tmdbKey\"")
 }
