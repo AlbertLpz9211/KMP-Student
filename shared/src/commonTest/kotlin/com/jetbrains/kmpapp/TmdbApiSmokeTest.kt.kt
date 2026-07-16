@@ -1,67 +1,69 @@
-package com.jetbrains.kmpapp
+package com.jetbrains.kmpapp.data
 
-import com.jetbrains.kmpapp.data.TmdbApi
+import com.jetbrains.kmpapp.data.dto.MovieDto
+import com.jetbrains.kmpapp.data.dto.MoviePageDto
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respond
+import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.headersOf
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.http.URLProtocol
+import io.ktor.http.path
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import kotlin.test.Test
-import kotlin.test.assertEquals
 
-class TmdbApiSmokeTest {
+class TmdbApi(
+    apiKey: String,
+    private val client: HttpClient = crearHttpClient(apiKey)
+) {
 
-    @Test
-    fun parsea_peliculas_correctamente() = runBlocking {
-        val engine = MockEngine {
-            respond(
-                content = """
-                    {
-                      "page": 1,
-                      "results": [
-                        {
-                          "id": 1,
-                          "title": "Dune",
-                          "overview": "Película de ciencia ficción",
-                          "vote_average": 8.4,
-                          "poster_path": "/dune.jpg",
-                          "release_date": "2021-10-22"
-                        }
-                      ],
-                      "total_pages": 1
-                    }
-                """.trimIndent(),
-                status = HttpStatusCode.OK,
-                headers = headersOf(
-                    HttpHeaders.ContentType,
-                    ContentType.Application.Json.toString()
-                )
-            )
+    suspend fun populares(pagina: Int = 1): MoviePageDto {
+        return client.get("movie/popular") {
+            parameter("page", pagina)
+        }.body()
+    }
+
+    suspend fun topRated(pagina: Int = 1): MoviePageDto {
+        return client.get("movie/top_rated") {
+            parameter("page", pagina)
+        }.body()
+    }
+
+    suspend fun nowPlaying(pagina: Int = 1): MoviePageDto {
+        return client.get("movie/now_playing") {
+            parameter("page", pagina)
+        }.body()
+    }
+
+    suspend fun detalle(id: Int): MovieDto {
+        return client.get("movie/$id").body()
+    }
+
+    suspend fun buscar(query: String, pagina: Int = 1): MoviePageDto {
+        return client.get("search/movie") {
+            parameter("query", query)
+            parameter("page", pagina)
+        }.body()
+    }
+}
+
+private fun crearHttpClient(apiKey: String): HttpClient {
+    return HttpClient {
+        install(ContentNegotiation) {
+            json(Json {
+                ignoreUnknownKeys = true
+            })
         }
 
-        val client = HttpClient(engine) {
-            install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                })
-            }
-
-            defaultRequest {
-                url("https://api.themoviedb.org/3/")
+        defaultRequest {
+            url {
+                protocol = URLProtocol.HTTPS
+                host = "api.themoviedb.org"
+                path("3/")
+                parameters.append("api_key", apiKey)
+                parameters.append("language", "es-MX")
             }
         }
-
-        val api = TmdbApi("prueba", client)
-        val respuesta = api.populares()
-
-        assertEquals(1, respuesta.results.size)
-        assertEquals("Dune", respuesta.results[0].title)
     }
 }
