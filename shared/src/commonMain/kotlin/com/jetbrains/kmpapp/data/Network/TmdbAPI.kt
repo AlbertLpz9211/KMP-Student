@@ -1,10 +1,13 @@
-package com.jetbrains.kmpapp.data.network
+package com.jetbrains.kmpapp.data.Network
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import com.jetbrains.kmpapp.BuildConfig
+import com.jetbrains.kmpapp.data.Network.MovieDetailDTO
+import com.jetbrains.kmpapp.data.Network.MovieResponseDTO
+
 class TmdbApi(private val client: HttpClient) {
 
     private val baseUrl = "https://api.themoviedb.org/3"
