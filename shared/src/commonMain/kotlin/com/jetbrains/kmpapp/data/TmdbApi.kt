@@ -12,9 +12,20 @@ import io.ktor.http.path
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-class TmdbApi(private val apiKey: String) {
+class TmdbApi(
+    apiKey: String,
+    private val client: HttpClient = crearHttpClient(apiKey)
+) {
 
-    private val client = HttpClient {
+    suspend fun populares(pagina: Int = 1): MoviePageDto {
+        return client.get("movie/popular") {
+            parameter("page", pagina)
+        }.body()
+    }
+}
+
+private fun crearHttpClient(apiKey: String): HttpClient {
+    return HttpClient {
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true
@@ -30,11 +41,5 @@ class TmdbApi(private val apiKey: String) {
                 parameters.append("language", "es-MX")
             }
         }
-    }
-
-    suspend fun populares(pagina: Int = 1): MoviePageDto {
-        return client.get("movie/popular") {
-            parameter("page", pagina)
-        }.body()
     }
 }
