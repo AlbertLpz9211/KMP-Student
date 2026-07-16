@@ -1,4 +1,4 @@
-package com.jetbrains.kmpapp.data.remote
+package com.jetbrains.kmpapp.data.network
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
