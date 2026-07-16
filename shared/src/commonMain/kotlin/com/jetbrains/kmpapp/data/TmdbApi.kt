@@ -1,5 +1,6 @@
 package com.jetbrains.kmpapp.data
 
+import com.jetbrains.kmpapp.data.dto.MovieDto
 import com.jetbrains.kmpapp.data.dto.MoviePageDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -22,10 +23,35 @@ class TmdbApi(
             parameter("page", pagina)
         }.body()
     }
+
+    suspend fun topRated(pagina: Int = 1): MoviePageDto {
+        return client.get("movie/top_rated") {
+            parameter("page", pagina)
+        }.body()
+    }
+
+    suspend fun nowPlaying(pagina: Int = 1): MoviePageDto {
+        return client.get("movie/now_playing") {
+            parameter("page", pagina)
+        }.body()
+    }
+
+    suspend fun detalle(id: Int): MovieDto {
+        return client.get("movie/$id").body()
+    }
+
+    suspend fun buscar(query: String, pagina: Int = 1): MoviePageDto {
+        return client.get("search/movie") {
+            parameter("query", query)
+            parameter("page", pagina)
+        }.body()
+    }
 }
 
 private fun crearHttpClient(apiKey: String): HttpClient {
     return HttpClient {
+        expectSuccess = true
+
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true
