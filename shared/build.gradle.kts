@@ -1,3 +1,5 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -6,6 +8,27 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.buildkonfig)
+}
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+}
+
+buildkonfig {
+    packageName = "com.jetbrains.kmpapp"
+    exposeObjectWithName = "TmdbConfig"
+
+    defaultConfigs {
+        buildConfigField(
+            STRING,
+            "TMDB_API_KEY",
+            localProperties.getProperty("tmdb.apikey") ?: ""
+        )
+    }
 }
 
 kotlin {
