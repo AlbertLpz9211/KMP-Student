@@ -44,9 +44,13 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(kotlin("test"))
             implementation(libs.ktor.client.mock)
-            // implementation(libs.sqldelight.sqlite.driver)
         }
     }
+}
+
+// Configuración adicional para tests de Android si el source set existe
+kotlin.sourceSets.findByName("androidUnitTest")?.dependencies {
+    implementation(libs.sqldelight.sqlite.driver)
 }
 
 sqldelight {
