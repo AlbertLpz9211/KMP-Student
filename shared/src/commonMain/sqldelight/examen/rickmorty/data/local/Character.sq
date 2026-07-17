@@ -1,0 +1,22 @@
+CREATE TABLE CharacterEntity (
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    status TEXT NOT NULL,
+    species TEXT NOT NULL,
+    image TEXT NOT NULL,
+    locationName TEXT NOT NULL,
+    isFavorite INTEGER NOT NULL DEFAULT 0
+);
+
+selectAll:
+SELECT * FROM CharacterEntity;
+
+selectFavorites:
+SELECT * FROM CharacterEntity WHERE isFavorite = 1;
+
+insertCharacter:
+INSERT OR REPLACE INTO CharacterEntity(id, name, status, species, image, locationName)
+VALUES (?, ?, ?, ?, ?, ?);
+
+setFavorite:
+UPDATE CharacterEntity SET isFavorite = ? WHERE id = ?;
