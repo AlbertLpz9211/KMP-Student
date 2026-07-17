@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -7,15 +6,9 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.sqldelight)
 }
 
-val localProperties = Properties().apply {
-    val file = rootProject.file("local.properties")
-    if (file.exists()) {
-        file.inputStream().use { load(it) }
-    }
-}
-val tmdbApiKey = localProperties.getProperty("tmdb.apikey") ?: ""
 
 kotlin {
     // Accedemos al target de android que el plugin crea automáticamente
@@ -53,9 +46,11 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.sqldelight.android.driver)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+            implementation(libs.sqldelight.native.driver)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -77,31 +72,10 @@ kotlin {
             implementation(libs.coil.network.ktor)
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
+            implementation(libs.sqldelight.coroutines.extensions)
         }
     }
 
-    sourceSets.commonMain.configure {
-        kotlin.srcDir(
-            tasks.register("generateConfig") {
-                val outputDir = layout.buildDirectory.dir("generated/config")
-                val key = tmdbApiKey
-                outputs.dir(outputDir)
-                doLast {
-                    val configFile = outputDir.get().file("com/jetbrains/kmpapp/Config.kt").asFile
-                    configFile.parentFile.mkdirs()
-                    configFile.writeText(
-                        """
-                        package com.jetbrains.kmpapp
-                        
-                        object Config {
-                            const val TMDB_API_KEY = "$key"
-                        }
-                        """.trimIndent()
-                    )
-                }
-            }
-        )
-    }
 
     sourceSets.commonTest.dependencies {
         implementation(kotlin("test"))
@@ -113,4 +87,12 @@ kotlin {
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+}
+
+sqldelight {
+    databases {
+        create("RickMortyDatabase") {
+            packageName.set("com.jetbrains.kmpapp.db")
+        }
+    }
 }
