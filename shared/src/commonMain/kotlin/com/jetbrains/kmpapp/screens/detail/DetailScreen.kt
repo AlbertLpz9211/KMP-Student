@@ -50,6 +50,7 @@ import kmp_app_template.shared.generated.resources.label_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+
 @Composable
 fun DetailScreen(
     objectId: Int,
