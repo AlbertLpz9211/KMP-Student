@@ -1,7 +1,6 @@
 package com.jetbrains.rickmorty.api
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerialName
 
 @Serializable
 data class CharacterPageDto(

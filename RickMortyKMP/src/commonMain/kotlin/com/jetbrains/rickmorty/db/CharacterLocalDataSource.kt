@@ -26,7 +26,7 @@ class CharacterLocalDataSource(database: RickMortyDatabase) {
         }
     }
 
-    suspend fun guardarTodos(personajes: List<Personaje>) {
+    fun guardarTodos(personajes: List<Personaje>) {
         queries.transaction {
             personajes.forEach { 
                 queries.insertCharacter(
