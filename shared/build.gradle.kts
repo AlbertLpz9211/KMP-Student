@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.sqldelight)
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -84,11 +85,15 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.sqldelight.android.driver) // driver de SQLite para Android
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+            implementation(libs.sqldelight.native.driver)  // driver de SQLite para iOS (Native)
         }
         commonMain.dependencies {
+            implementation(libs.sqldelight.runtime)               // API común de SQLDelight
+            implementation(libs.sqldelight.coroutines.extensions) // .asFlow() → observar la DB como Flow
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
@@ -120,4 +125,18 @@ kotlin {
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SESIÓN 4 — SQLDelight
+// A partir de los archivos .sq de commonMain/sqldelight/, SQLDelight GENERA código
+// Kotlin type-safe: una clase `CineDb` y las funciones de las queries (selectAll, etc.).
+// packageName define en qué paquete quedan esas clases generadas.
+// ─────────────────────────────────────────────────────────────────────────────
+sqldelight {
+    databases {
+        create("CineDb") {
+            packageName.set("com.jetbrains.kmpapp.db")
+        }
+    }
 }
