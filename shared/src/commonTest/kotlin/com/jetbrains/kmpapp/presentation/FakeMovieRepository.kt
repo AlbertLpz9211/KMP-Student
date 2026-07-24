@@ -28,7 +28,9 @@ class FakeMovieRepository(
     override fun observarFavoritas(): Flow<List<Movie>> = db.map { l -> l.filter { it.esFavorita } }
     override fun observarPelicula(id: Int): Flow<Movie?> = db.map { l -> l.find { it.id == id } }
 
-    override suspend fun refrescarPopulares() {
+    override suspend fun refrescarPopulares() = cargarPagina(1)
+
+    override suspend fun cargarPagina(pagina: Int) {
         if (fallarAlRefrescar) throw RuntimeException("401 unauthorized (simulado)")
         val favoritas = db.value.filter { it.esFavorita }.map { it.id }.toSet()
         db.value = enServidor.map { it.copy(esFavorita = it.id in favoritas) }

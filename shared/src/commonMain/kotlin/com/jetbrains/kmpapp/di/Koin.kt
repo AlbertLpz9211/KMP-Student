@@ -14,7 +14,6 @@ import com.jetbrains.kmpapp.domain.usecase.MarcarFavorita
 import com.jetbrains.kmpapp.presentation.detail.MovieDetailViewModel
 import com.jetbrains.kmpapp.presentation.favorites.FavoritesViewModel
 import com.jetbrains.kmpapp.presentation.list.MovieListViewModel
-import org.koin.core.KoinApplication
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -64,8 +63,12 @@ val viewModelModule = module {
 /**
  * Arranca Koin con todos los módulos comunes + el módulo específico de la plataforma
  * (que aporta el CineDb con su driver de SQLite).
+ *
+ * Devuelve Unit a propósito: así el módulo androidApp/iOS no necesita conocer los tipos internos
+ * de Koin (koin-core es un detalle de implementación de `shared`).
  */
-fun initKoin(platformModule: Module): KoinApplication =
+fun initKoin(platformModule: Module) {
     org.koin.core.context.startKoin {
         modules(platformModule, dataModule, domainModule, viewModelModule)
     }
+}

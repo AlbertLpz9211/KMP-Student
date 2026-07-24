@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.jetbrains.kmpapp.screens.detail.DetailScreen
+import com.jetbrains.kmpapp.screens.favorites.FavoritesScreen
 import com.jetbrains.kmpapp.screens.list.ListScreen
 import com.jetbrains.kmpapp.theme.CineTheme
 import kotlinx.serialization.Serializable
@@ -18,6 +19,9 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 object ListDestination
+
+@Serializable
+object FavoritesDestination
 
 @Serializable
 data class DetailDestination(val movieId: Int)
@@ -37,6 +41,15 @@ fun App() {
                         onMovieClick = { movieId ->
                             navController.navigate(DetailDestination(movieId))
                         },
+                        onFavoritesClick = { navController.navigate(FavoritesDestination) },
+                    )
+                }
+                composable<FavoritesDestination> {
+                    FavoritesScreen(
+                        onMovieClick = { movieId ->
+                            navController.navigate(DetailDestination(movieId))
+                        },
+                        onBack = { navController.popBackStack() },
                     )
                 }
                 composable<DetailDestination> { backStackEntry ->

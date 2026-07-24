@@ -1,6 +1,7 @@
 package com.jetbrains.kmpapp.presentation
 
 import com.jetbrains.kmpapp.domain.model.MovieDetail
+import com.jetbrains.kmpapp.domain.usecase.BuscarPeliculas
 import com.jetbrains.kmpapp.domain.usecase.GetDetalle
 import com.jetbrains.kmpapp.domain.usecase.GetFavoritas
 import com.jetbrains.kmpapp.domain.usecase.GetPopulares
@@ -49,7 +50,7 @@ class ViewModelsTest {
     @Test
     fun lista_al_iniciar_refresca_y_muestra_populares() = runTest {
         val repo = FakeMovieRepository().apply { enServidor = listOf(peli(1), peli(2)) }
-        val vm = MovieListViewModel(GetPopulares(repo))
+        val vm = MovieListViewModel(GetPopulares(repo), BuscarPeliculas(repo))
         val job = activar(vm.state)
 
         advanceUntilIdle()
@@ -62,7 +63,7 @@ class ViewModelsTest {
     @Test
     fun lista_muestra_error_si_la_red_falla_y_no_hay_datos() = runTest {
         val repo = FakeMovieRepository().apply { fallarAlRefrescar = true }
-        val vm = MovieListViewModel(GetPopulares(repo))
+        val vm = MovieListViewModel(GetPopulares(repo), BuscarPeliculas(repo))
         val job = activar(vm.state)
 
         advanceUntilIdle()
@@ -75,7 +76,7 @@ class ViewModelsTest {
     fun lista_con_datos_no_tapa_con_error_de_red() = runTest {
         // Ya hay una película "cacheada" en la DB; aunque la red falle, se siguen viendo datos.
         val repo = FakeMovieRepository(peliculasEnDb = listOf(peli(7))).apply { fallarAlRefrescar = true }
-        val vm = MovieListViewModel(GetPopulares(repo))
+        val vm = MovieListViewModel(GetPopulares(repo), BuscarPeliculas(repo))
         val job = activar(vm.state)
 
         advanceUntilIdle()
@@ -87,7 +88,7 @@ class ViewModelsTest {
     @Test
     fun lista_refrescar_manual_recarga() = runTest {
         val repo = FakeMovieRepository()
-        val vm = MovieListViewModel(GetPopulares(repo))
+        val vm = MovieListViewModel(GetPopulares(repo), BuscarPeliculas(repo))
         val job = activar(vm.state)
         advanceUntilIdle()
         assertTrue(vm.state.value.peliculas.isEmpty())
@@ -96,6 +97,28 @@ class ViewModelsTest {
         vm.refrescar()
         advanceUntilIdle()
         assertEquals(3, vm.state.value.peliculas.size)
+        job.cancel()
+    }
+
+    @Test
+    fun lista_busqueda_con_debounce_muestra_resultados_y_vuelve_a_populares() = runTest {
+        val repo = FakeMovieRepository().apply {
+            enServidor = listOf(peli(1))
+            resultadosBusqueda = listOf(peli(10, "Dune"), peli(11, "Dune 2"))
+        }
+        val vm = MovieListViewModel(GetPopulares(repo), BuscarPeliculas(repo))
+        val job = activar(vm.state)
+        advanceUntilIdle()
+
+        vm.onQueryChange("dune")
+        advanceUntilIdle() // supera el debounce (reloj virtual)
+        assertTrue(vm.state.value.enBusqueda)
+        assertEquals(2, vm.state.value.peliculas.size)
+
+        vm.onQueryChange("") // limpiar → vuelve a populares
+        advanceUntilIdle()
+        assertTrue(!vm.state.value.enBusqueda)
+        assertEquals(1, vm.state.value.peliculas.size)
         job.cancel()
     }
 

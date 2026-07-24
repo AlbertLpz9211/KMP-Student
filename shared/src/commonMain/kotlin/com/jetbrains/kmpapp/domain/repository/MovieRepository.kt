@@ -27,8 +27,11 @@ interface MovieRepository {
     /** Una película concreta (para el detalle y su botón de favorito), reactiva. */
     fun observarPelicula(id: Int): Flow<Movie?>
 
-    /** Baja populares de TMDB y las guarda en la DB local. */
+    /** Baja la primera página de populares de TMDB y la guarda en la DB local. */
     suspend fun refrescarPopulares()
+
+    /** Carga una página concreta de populares y la FUSIONA en la DB (paginación infinita). */
+    suspend fun cargarPagina(pagina: Int)
 
     /** Búsqueda en TMDB (resultados en vivo, no se cachean). */
     suspend fun buscar(query: String): List<Movie>

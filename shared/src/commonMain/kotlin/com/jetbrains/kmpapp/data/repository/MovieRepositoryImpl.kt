@@ -30,10 +30,13 @@ class MovieRepositoryImpl(
     override fun observarPelicula(id: Int): Flow<Movie?> = local.observarPorId(id)
 
     // ── Escritura / red ───────────────────────────────────────────────────────
-    override suspend fun refrescarPopulares() {
-        // 1) baja de TMDB → 2) DTO a dominio → 3) guarda en la DB (los Flows emiten el cambio).
-        val pagina = remote.populares()
-        local.guardarTodas(pagina.results.map { it.toDomain() })
+    // Refrescar = recargar la primera página.
+    override suspend fun refrescarPopulares() = cargarPagina(1)
+
+    override suspend fun cargarPagina(pagina: Int) {
+        // 1) baja de TMDB → 2) DTO a dominio → 3) guarda/fusiona en la DB (los Flows emiten el cambio).
+        val page = remote.populares(pagina)
+        local.guardarTodas(page.results.map { it.toDomain() })
     }
 
     override suspend fun buscar(query: String): List<Movie> =

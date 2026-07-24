@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.Flow
 class GetPopulares(private val repo: MovieRepository) {
     operator fun invoke(): Flow<List<Movie>> = repo.observarPopulares()
     suspend fun refrescar() = repo.refrescarPopulares()
+    suspend fun cargarPagina(pagina: Int) = repo.cargarPagina(pagina)
 }
 
 /** Observa solo las favoritas. */
