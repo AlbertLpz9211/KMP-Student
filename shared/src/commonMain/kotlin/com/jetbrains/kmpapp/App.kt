@@ -15,31 +15,39 @@ import com.jetbrains.kmpapp.screens.detail.DetailScreen
 import com.jetbrains.kmpapp.screens.list.ListScreen
 import kotlinx.serialization.Serializable
 
+/**
+ * DESTINOS de navegación (type-safe con Navigation Compose). Cada destino es un objeto/clase
+ * @Serializable; los argumentos viajan como propiedades (aquí, el id de la película).
+ */
 @Serializable
 object ListDestination
 
 @Serializable
-data class DetailDestination(val objectId: Int)
+data class DetailDestination(val movieId: Int)
 
+/**
+ * Punto de entrada de la UI COMPARTIDA (misma función para Android e iOS).
+ * En la Sesión 5 solo navegamos Lista → Detalle; en la Sesión 7 añadiremos Favoritas.
+ */
 @Composable
 fun App() {
     MaterialTheme(
-        colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()
+        colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme(),
     ) {
         Surface {
             val navController: NavHostController = rememberNavController()
             NavHost(navController = navController, startDestination = ListDestination) {
                 composable<ListDestination> {
-                    ListScreen(navigateToDetails = { objectId ->
-                        navController.navigate(DetailDestination(objectId))
-                    })
+                    ListScreen(
+                        onMovieClick = { movieId ->
+                            navController.navigate(DetailDestination(movieId))
+                        },
+                    )
                 }
                 composable<DetailDestination> { backStackEntry ->
                     DetailScreen(
-                        objectId = backStackEntry.toRoute<DetailDestination>().objectId,
-                        navigateBack = {
-                            navController.popBackStack()
-                        }
+                        movieId = backStackEntry.toRoute<DetailDestination>().movieId,
+                        onBack = { navController.popBackStack() },
                     )
                 }
             }

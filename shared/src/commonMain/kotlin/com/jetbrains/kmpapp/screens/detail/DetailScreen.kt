@@ -1,21 +1,15 @@
 package com.jetbrains.kmpapp.screens.detail
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,117 +18,64 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cinekmp.shared.generated.resources.Res
-import cinekmp.shared.generated.resources.back
-import cinekmp.shared.generated.resources.label_title
-import cinekmp.shared.generated.resources.label_artist
-import cinekmp.shared.generated.resources.label_credits
-import cinekmp.shared.generated.resources.label_date
-import cinekmp.shared.generated.resources.label_department
-import cinekmp.shared.generated.resources.label_dimensions
-import cinekmp.shared.generated.resources.label_medium
-import cinekmp.shared.generated.resources.label_repository
-import coil3.compose.AsyncImage
-import com.jetbrains.kmpapp.data.MuseumObject
-import com.jetbrains.kmpapp.screens.EmptyScreenContent
-
-import org.jetbrains.compose.resources.stringResource
+import com.jetbrains.kmpapp.presentation.detail.MovieDetailViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * Pantalla de DETALLE (versión Sesión 5: campos básicos).
+ * En la Sesión 6 añadimos el póster grande y el botón de FAVORITO.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(
-    objectId: Int,
-    navigateBack: () -> Unit,
+    movieId: Int,
+    onBack: () -> Unit,
 ) {
-    val viewModel = koinViewModel<DetailViewModel>()
+    val viewModel = koinViewModel<MovieDetailViewModel>()
+    // LaunchedEffect(movieId): al entrar (o si cambia el id), pedimos esa película.
+    LaunchedEffect(movieId) { viewModel.cargar(movieId) }
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val obj by viewModel.getObject(objectId).collectAsStateWithLifecycle(initialValue = null)
-    AnimatedContent(obj != null) { objectAvailable ->
-        if (objectAvailable) {
-            ObjectDetails(obj!!, onBackClick = navigateBack)
-        } else {
-            EmptyScreenContent(Modifier.fillMaxSize())
-        }
-    }
-}
-
-@Composable
-private fun ObjectDetails(
-    obj: MuseumObject,
-    onBackClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
     Scaffold(
         topBar = {
-            @OptIn(ExperimentalMaterial3Api::class)
             TopAppBar(
-                title = {},
+                title = { Text(state.pelicula?.titulo ?: "Detalle") },
                 navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back))
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
                     }
-                }
+                },
             )
         },
-        modifier = modifier.windowInsetsPadding(WindowInsets.systemBars),
-    ) { paddingValues ->
-        Column(
-            Modifier
-                .verticalScroll(rememberScrollState())
-                .padding(paddingValues)
-        ) {
-            AsyncImage(
-                model = obj.primaryImageSmall,
-                contentDescription = obj.title,
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.LightGray)
-            )
-
-            SelectionContainer {
-                Column(Modifier.padding(12.dp)) {
-                    Text(obj.title, style = MaterialTheme.typography.headlineMedium)
-                    Spacer(Modifier.height(6.dp))
-                    LabeledInfo(stringResource(Res.string.label_title), obj.title)
-                    LabeledInfo(stringResource(Res.string.label_artist), obj.artistDisplayName)
-                    LabeledInfo(stringResource(Res.string.label_date), obj.objectDate)
-                    LabeledInfo(stringResource(Res.string.label_dimensions), obj.dimensions)
-                    LabeledInfo(stringResource(Res.string.label_medium), obj.medium)
-                    LabeledInfo(stringResource(Res.string.label_department), obj.department)
-                    LabeledInfo(stringResource(Res.string.label_repository), obj.repository)
-                    LabeledInfo(stringResource(Res.string.label_credits), obj.creditLine)
+    ) { padding ->
+        Box(Modifier.fillMaxSize().padding(padding)) {
+            val pelicula = state.pelicula
+            when {
+                state.cargando -> CircularProgressIndicator(Modifier.align(Alignment.Center))
+                pelicula == null -> Text(
+                    state.error ?: "No se encontró la película",
+                    Modifier.align(Alignment.Center),
+                )
+                else -> Column(
+                    Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Text(pelicula.titulo, style = MaterialTheme.typography.headlineSmall)
+                    Text("${pelicula.anio}  ·  ★ ${pelicula.rating}", style = MaterialTheme.typography.bodyMedium)
+                    // Datos extra de la red (géneros/duración), si ya llegaron.
+                    state.detalle?.let { d ->
+                        if (d.generos.isNotEmpty()) Text("Géneros: ${d.generos.joinToString()}")
+                        d.duracionMin?.let { Text("Duración: $it min") }
+                    }
+                    Text(pelicula.overview, style = MaterialTheme.typography.bodyLarge)
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun LabeledInfo(
-    label: String,
-    data: String,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier.padding(vertical = 4.dp)) {
-        Spacer(Modifier.height(6.dp))
-        Text(
-            buildAnnotatedString {
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append("$label: ")
-                }
-                append(data)
-            }
-        )
     }
 }
