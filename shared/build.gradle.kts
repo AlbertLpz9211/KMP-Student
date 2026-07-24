@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -6,6 +7,48 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinxSerialization)
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SESIÓN 3 — API key de TMDB SIN subirla a Git
+// Leemos `tmdb.apikey` de local.properties (que está en .gitignore) y con Gradle
+// generamos un archivo Kotlin con esa key como constante. Flujo:
+//   local.properties  →  Gradle (aquí)  →  CineBuildConfig.TMDB_API_KEY (en el código)
+// Si la key sale vacía en la app, es que falta la línea `tmdb.apikey=...` en local.properties.
+// ─────────────────────────────────────────────────────────────────────────────
+val tmdbApiKey: String = run {
+    val props = Properties()
+    val file = rootProject.file("local.properties")
+    if (file.exists()) file.inputStream().use { props.load(it) }
+    props.getProperty("tmdb.apikey").orEmpty()
+}
+
+// Tarea de Gradle que ESCRIBE el archivo CineBuildConfig.kt dentro de build/generated.
+// Al depender de esta tarea desde commonMain, se regenera sola en cada build.
+val generateCineBuildConfig by tasks.registering {
+    val outputDir = layout.buildDirectory.dir("generated/cine/commonMain/kotlin")
+    outputs.dir(outputDir)
+    val apiKey = tmdbApiKey // capturamos el valor (amigable con el configuration-cache)
+    doLast {
+        val pkgDir = outputDir.get().dir("com/jetbrains/kmpapp/config").asFile
+        pkgDir.mkdirs()
+        pkgDir.resolve("CineBuildConfig.kt").writeText(
+            """
+            package com.jetbrains.kmpapp.config
+
+            /**
+             * Constantes de configuración GENERADAS por Gradle en tiempo de compilación.
+             * La API key viene de local.properties (ignorado por Git): el secreto nunca viaja al repo.
+             * ¿La ves vacía? Pega `tmdb.apikey=TU_KEY` en local.properties y vuelve a sincronizar.
+             */
+            object CineBuildConfig {
+                const val TMDB_API_KEY: String = "$apiKey"
+                const val TMDB_BASE_URL: String = "https://api.themoviedb.org/3/"
+                const val TMDB_IMAGE_BASE_URL: String = "https://image.tmdb.org/t/p/w500"
+            }
+            """.trimIndent()
+        )
+    }
 }
 
 kotlin {
@@ -33,6 +76,10 @@ kotlin {
     }
 
     sourceSets {
+        // Añadimos el código generado (CineBuildConfig.kt) como fuente de commonMain.
+        commonMain {
+            kotlin.srcDir(generateCineBuildConfig)
+        }
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
@@ -66,6 +113,7 @@ kotlin {
     sourceSets.commonTest.dependencies {
         implementation(kotlin("test"))
         implementation(libs.kotlinx.coroutines.test)
+        implementation(libs.ktor.client.mock) // MockEngine para probar la red sin internet
     }
 }
 
