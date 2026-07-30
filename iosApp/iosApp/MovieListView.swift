@@ -2,24 +2,45 @@ import SwiftUI
 import Shared
 
 struct MovieListView: View {
-    // Variable de estado para guardar los títulos que vienen de Kotlin
-    @State private var titulos: [String] = []
+    // Variable de estado para guardar las películas que vienen de Kotlin
+    @State private var peliculas: [Movie] = []
 
-    // Obtenemos el ViewModel desde Koin (inyectado a través de la clase Helper de Shared)
-    private let viewModel = MovieListViewModel(repository: MovieRepositoryImpl(remote: TmdbApi(apiKey: Config.shared.TMDB_API_KEY, engine: nil), local: MovieLocalDataSource(db: CineDb(driver: DriverFactory().createDriver()))))
+    // Motor de la App: Construimos el ViewModel inyectando sus dependencias manualmente
+    private let viewModel: MovieListViewModel = {
+        let driver = DriverFactory().createDriver()
+        let db = CineDb(driver: driver)
+        let local = MovieLocalDataSource(db: db)
+        let remote = TmdbApi(apiKey: Config.shared.TMDB_API_KEY, engine: nil)
+        let repository = MovieRepositoryImpl(remote: remote, local: local)
+
+        return MovieListViewModel(
+            getPopulares: GetPopulares(repo: repository),
+            buscarPeliculas: BuscarPeliculas(repo: repository)
+        )
+    }()
 
     var body: some View {
         NavigationView {
-            List(titulos, id: \.self) { titulo in
-                Text(titulo)
+            List(peliculas, id: \.id) { movie in
+                VStack(alignment: .leading) {
+                    Text(movie.title)
+                        .font(.headline)
+                    HStack {
+                        Text(movie.releaseYear)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Text("★ \(String(format: "%.1f", movie.rating))")
+                            .font(.caption)
+                            .foregroundColor(.orange)
+                    }
+                }
             }
-            .navigationTitle("Populares (SwiftUI)")
+            .navigationTitle("CineKMP Native")
             .task {
-                // Gracias a SKIE, podemos recorrer el StateFlow de Kotlin como una secuencia asíncrona de Swift
-                // Aquí observamos el estado de las películas
-                for await state in viewModel.uiState {
-                    // Mapeamos la lista de objetos Movie a sus títulos (Strings)
-                    self.titulos = state.movies.map { $0.title }
+                // Observamos el StateFlow 'state' de Kotlin usando la sintaxis AsyncSequence de SKIE
+                for await currentState in viewModel.state {
+                    self.peliculas = currentState.peliculas
                 }
             }
         }
