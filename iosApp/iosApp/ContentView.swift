@@ -20,12 +20,13 @@ struct MovieListView: View {
     @State private var peliculas: [Movie] = []
 
     var body: some View {
-        NavigationStack {
+        NavigationView {
             List(peliculas, id: \.id) { pelicula in
                 Text(pelicula.titulo)
             }
             .navigationTitle("Populares")
         }
+        .navigationViewStyle(.stack)
         .task {
             viewModel.refrescar()
 
