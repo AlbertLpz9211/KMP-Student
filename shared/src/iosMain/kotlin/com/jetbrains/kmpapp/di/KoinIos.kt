@@ -2,6 +2,9 @@ package com.jetbrains.kmpapp.di
 
 import com.jetbrains.kmpapp.data.local.DriverFactory
 import com.jetbrains.kmpapp.db.CineDb
+import com.jetbrains.kmpapp.presentation.list.MovieListViewModel
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.dsl.module
 
 /**
@@ -13,3 +16,10 @@ fun doInitKoinIos() = initKoin(
         single { CineDb(DriverFactory().createDriver()) }
     },
 )
+
+/**
+ * Helper para inyectar objetos de Koin desde Swift.
+ */
+object KoinHelper : KoinComponent {
+    fun getMovieListViewModel(): MovieListViewModel = get()
+}

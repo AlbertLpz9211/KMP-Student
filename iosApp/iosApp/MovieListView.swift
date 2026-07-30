@@ -5,38 +5,53 @@ struct MovieListView: View {
     // Variable de estado para guardar las películas que vienen de Kotlin
     @State private var peliculas: [Movie] = []
 
-    // Motor de la App: Construimos el ViewModel inyectando sus dependencias manualmente
-    private let viewModel: MovieListViewModel = {
-        let driver = DriverFactory().createDriver()
-        let db = CineDb(driver: driver)
-        let local = MovieLocalDataSource(db: db)
-        let remote = TmdbApi(apiKey: Config.shared.TMDB_API_KEY, engine: nil)
-        let repository = MovieRepositoryImpl(remote: remote, local: local)
-
-        return MovieListViewModel(
-            getPopulares: GetPopulares(repo: repository),
-            buscarPeliculas: BuscarPeliculas(repo: repository)
-        )
-    }()
+    // Motor de la App: Lo obtenemos de Koin (vía el helper en Kotlin)
+    private let viewModel: MovieListViewModel = KoinHelper.shared.getMovieListViewModel()
 
     var body: some View {
         NavigationView {
-            List(peliculas, id: \.id) { movie in
-                VStack(alignment: .leading) {
-                    Text(movie.title)
-                        .font(.headline)
-                    HStack {
-                        Text(movie.releaseYear)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        Spacer()
-                        Text("★ \(String(format: "%.1f", movie.rating))")
-                            .font(.caption)
-                            .foregroundColor(.orange)
+            List {
+                ForEach(peliculas, id: \.id) { movie in
+                    HStack(alignment: .top, spacing: 12) {
+                        // 1. Imagen del póster (Nativo SwiftUI AsyncImage)
+                        if let urlString = movie.posterUrl, let url = URL(string: urlString) {
+                            AsyncImage(url: url) { image in
+                                image.resizable()
+                                     .aspectRatio(contentMode: .fill)
+                            } placeholder: {
+                                Color.gray.opacity(0.3)
+                            }
+                            .frame(width: 60, height: 90)
+                            .clipped()
+                            .cornerRadius(8)
+                        }
+
+                        // 2. Información de la película
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(movie.titulo)
+                                .font(.headline)
+                                .lineLimit(2)
+                            
+                            Text(movie.anio)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            
+                            Spacer()
+                            
+                            HStack {
+                                Image(systemName: "star.fill")
+                                    .foregroundColor(.orange)
+                                    .font(.caption)
+                                Text(String(format: "%.1f", movie.rating))
+                                    .font(.caption)
+                                    .fontWeight(.bold)
+                            }
+                        }
+                        .padding(.vertical, 4)
                     }
                 }
             }
-            .navigationTitle("CineKMP Native")
+            .navigationTitle("Películas Populares")
             .task {
                 // Observamos el StateFlow 'state' de Kotlin usando la sintaxis AsyncSequence de SKIE
                 for await currentState in viewModel.state {

@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.sqldelight)
+    alias(libs.plugins.skie)
 
 }
 
@@ -28,6 +29,8 @@ val tmdbApiKey: String = run {
 // Tarea de Gradle que ESCRIBE el archivo CineBuildConfig.kt dentro de build/generated.
 // Al depender de esta tarea desde commonMain, se regenera sola en cada build.
 val generateCineBuildConfig by tasks.registering {
+    val propertiesFile = rootProject.file("local.properties")
+    inputs.file(propertiesFile).optional() // Hace que la tarea se invalide si local.properties cambia
     val outputDir = layout.buildDirectory.dir("generated/cine/commonMain/kotlin")
     outputs.dir(outputDir)
     val apiKey = tmdbApiKey // capturamos el valor (amigable con el configuration-cache)
@@ -61,6 +64,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "Shared"
             isStatic = true
+            linkerOpts("-lsqlite3")
         }
     }
 
