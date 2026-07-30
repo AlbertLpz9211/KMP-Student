@@ -14,6 +14,10 @@ import com.jetbrains.kmpapp.domain.usecase.MarcarFavorita
 import com.jetbrains.kmpapp.presentation.detail.MovieDetailViewModel
 import com.jetbrains.kmpapp.presentation.favorites.FavoritesViewModel
 import com.jetbrains.kmpapp.presentation.list.MovieListViewModel
+import com.jetbrains.kmpapp.rickmorty.PersonajeViewModel
+import com.jetbrains.kmpapp.rickmorty.data.CharacterLocalDataSource
+import com.jetbrains.kmpapp.rickmorty.data.RickMortyApi
+import com.jetbrains.kmpapp.rickmorty.data.PersonajeRepository
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -43,6 +47,12 @@ val dataModule = module {
 
     // Repositorio (une red + local); se expone como la interfaz del dominio.
     singleOf(::MovieRepositoryImpl) bind MovieRepository::class
+
+    // Rick and Morty
+    single { RickMortyApi.createDefault() }
+    singleOf(::RickMortyApi)
+    singleOf(::CharacterLocalDataSource)
+    singleOf(::PersonajeRepository)
 }
 
 val domainModule = module {
@@ -58,6 +68,7 @@ val viewModelModule = module {
     factoryOf(::MovieListViewModel)
     factoryOf(::MovieDetailViewModel)
     factoryOf(::FavoritesViewModel)
+    factoryOf(::PersonajeViewModel)
 }
 
 /**

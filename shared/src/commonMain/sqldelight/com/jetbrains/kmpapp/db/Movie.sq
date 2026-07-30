@@ -41,3 +41,24 @@ UPDATE MovieEntity SET title = ?, overview = ?, rating = ?, posterUrl = ?, year 
 -- Marcar/desmarcar favorito.
 setFavorite:
 UPDATE MovieEntity SET isFavorite = ? WHERE id = ?;
+
+-- RICK AND MORTY
+CREATE TABLE CharacterEntity (
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    status TEXT NOT NULL,
+    species TEXT NOT NULL,
+    image TEXT NOT NULL,
+    locationName TEXT NOT NULL,
+    isFavorite INTEGER NOT NULL DEFAULT 0
+);
+
+selectAllCharacters:
+SELECT * FROM CharacterEntity;
+
+insertCharacter:
+INSERT OR REPLACE INTO CharacterEntity(id, name, status, species, image, locationName)
+VALUES (?, ?, ?, ?, ?, ?);
+
+setCharacterFavorite:
+UPDATE CharacterEntity SET isFavorite = ? WHERE id = ?;

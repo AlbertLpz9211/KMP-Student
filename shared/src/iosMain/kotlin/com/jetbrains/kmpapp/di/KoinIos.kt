@@ -2,6 +2,8 @@ package com.jetbrains.kmpapp.di
 
 import com.jetbrains.kmpapp.data.local.DriverFactory
 import com.jetbrains.kmpapp.db.CineDb
+import com.jetbrains.kmpapp.rickmorty.db.RickMortyDatabase
+import com.jetbrains.kmpapp.rickmorty.data.DriverFactory as RickMortyDriverFactory
 import org.koin.dsl.module
 
 /**
@@ -11,5 +13,6 @@ import org.koin.dsl.module
 fun initKoinIos() = initKoin(
     platformModule = module {
         single { CineDb(DriverFactory().createDriver()) }
+        single { RickMortyDatabase(RickMortyDriverFactory().createDriver()) }
     },
 )
