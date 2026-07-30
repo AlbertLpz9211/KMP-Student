@@ -2,6 +2,9 @@ package com.jetbrains.kmpapp.di
 
 import com.jetbrains.kmpapp.data.local.DriverFactory
 import com.jetbrains.kmpapp.db.CineDb
+import com.jetbrains.kmpapp.presentation.list.MovieListViewModel
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.dsl.module
 
 /**
@@ -13,3 +16,8 @@ fun initKoinIos() = initKoin(
         single { CineDb(DriverFactory().createDriver()) }
     },
 )
+
+// Swift usa esta clase para obtener el ViewModel registrado en Koin.
+class IosViewModelFactory : KoinComponent {
+    fun movieListViewModel(): MovieListViewModel = get()
+}

@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.sqldelight)
+    id("co.touchlab.skie") version "0.10.14"
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
