@@ -1,8 +1,33 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    alias(libs.plugins.androidApplication) apply false
-    alias(libs.plugins.androidMultiplatformLibrary) apply false
-    alias(libs.plugins.composeCompiler) apply false
-    alias(libs.plugins.composeMultiplatform) apply false
-    alias(libs.plugins.kotlinMultiplatform) apply false
-    alias(libs.plugins.kotlinxSerialization) apply false
+    kotlin("jvm") version "2.0.21"
+}
+
+group = "patrones"
+version = "1.0-SNAPSHOT"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation(kotlin("test"))
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_21)
+        // Esta opción ayuda a evitar errores de compatibilidad interna
+        freeCompilerArgs.add("-Xjdk-release=21")
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
