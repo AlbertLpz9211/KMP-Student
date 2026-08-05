@@ -1,67 +1,68 @@
 # Patrón Bridge (Puente)
 
 ## Problema
-En el desarrollo del software de control para el huerto inteligente, nos enfrentamos a un problema de crecimiento exponencial de clases si queremos soportar múltiples tipos de interfaces de control (ej. `ControlDePared`, `PanelAutomatizado`, `ControlMovil`) y múltiples tipos de hardware (ej. `RiegoMecanico`, `IluminacionLEDHardware`). Si creáramos una clase por cada combinación posible (como `ControlDeParedRiego`, `PanelAutomatizadoLED`, etc.), el número de clases estallaría rápidamente al añadir nuevos dispositivos o controles.
+En el desarrollo de una aplicación multimedia multiplataforma, nos enfrentamos a un crecimiento exponencial de clases si queremos soportar múltiples tipos de interfaces de usuario (`InterfazMinimalista`, `InterfazAvanzadaEcualizada`, `InterfazCarPlay`) y múltiples motores de reproducción de audio hardware (`MotorAudioAltavoz`, `MotorAudioBluetooth`, `MotorAudioHDMI`). Si tuviéramos que crear una clase por cada combinación posible, el código se volvería inmanejable ante cualquier nuevo cambio en los controles o en el hardware.
 
 ## Solución
-El patrón **Bridge** desacopla una abstracción (`ControlRemotoHuerto`) de su implementación (`DispositivoHuerto`) mediante una relación de composición (el "puente"). De esta forma, ambas jerarquías de clases pueden extenderse y variar de manera completamente independiente: podemos crear nuevos controles sin tocar el hardware, y viceversa.
+El patrón **Bridge** desacopla la abstracción (`InterfazReproductor`) de su implementación de bajo nivel (`ReproductorAudio`) mediante una relación de composición (el "puente"). Gracias a esto, ambas jerarquías de clases pueden evolucionar y extenderse de manera totalmente independiente: podemos añadir nuevas interfaces visuales sin tocar el código de los motores de audio, y viceversa.
 
 ## Diagrama de Clases
 ```mermaid
 classDiagram
-    class ControlRemotoHuerto {
-        #dispositivo: DispositivoHuerto
-        +presionarBotonEncendido()
-        +ejecutarComandoEspecial()*
+    class InterfazReproductor {
+        #motor: ReproductorAudio
+        +reproducirPista(nombre: String)
+        +ajustarAmbienteSonoro(nivel: Int)*
     }
-    class ControlDePared {
-        +ejecutarComandoEspecial()
+    class InterfazMinimalista {
+        +ajustarAmbienteSonoro(nivel: Int)
     }
-    class PanelAutomatizado {
-        +ejecutarComandoEspecial()
+    class InterfazAvanzadaEcualizada {
+        +ajustarAmbienteSonoro(nivel: Int)
     }
-    class DispositivoHuerto {
+    class ReproductorAudio {
         <<interface>>
-        +encender()
-        +apagar()
-        +configurarPotencia(nivel)
-        +obtenerNombre()
-        +estaEncendido()
-        +obtenerPotenciaActual()
+        +cargarArchivo(archivo: String)
+        +iniciarReproduccion()
+        +detenerReproduccion()
+        +establecerVolumen(nivel: Int)
     }
-    class RiegoMecanico {
-        +encender()
-        +apagar()
-        +configurarPotencia(nivel)
+    class MotorAudioAltavoz {
+        +cargarArchivo(archivo: String)
+        +iniciarReproduccion()
+        +detenerReproduccion()
+        +establecerVolumen(nivel: Int)
     }
-    class IluminacionLEDHardware {
-        +encender()
-        +apagar()
-        +configurarPotencia(nivel)
+    class MotorAudioBluetooth {
+        +cargarArchivo(archivo: String)
+        +iniciarReproduccion()
+        +detenerReproduccion()
+        +establecerVolumen(nivel: Int)
     }
 
-    ControlRemotoHuerto <|-- ControlDePared
-    ControlRemotoHuerto <|-- PanelAutomatizado
-    ControlRemotoHuerto o--> DispositivoHuerto : puente
-    DispositivoHuerto <|.. RiegoMecanico
-    DispositivoHuerto <|.. IluminacionLEDHardware
+    InterfazReproductor <|-- InterfazMinimalista
+    InterfazReproductor <|-- InterfazAvanzadaEcualizada
+    InterfazReproductor o--> ReproductorAudio : puente
+    ReproductorAudio <|.. MotorAudioAltavoz
+    ReproductorAudio <|.. MotorAudioBluetooth
 ```
 ## Participantes
 | Rol del Patrón | Clase/Interfaz en el Código | Descripción |
 | :--- | :--- | :--- |
-| **Abstracción** | `ControlRemotoHuerto` | Define la interfaz de control de alto nivel y mantiene la referencia al implementador. |
-| **Abstracción Refinada** | `ControlDePared`, `PanelAutomatizado` | Extienden las variantes de control añadiendo lógica específica. |
-| **Implementador** | `DispositivoHuerto` | Define la interfaz de bajo nivel común para todos los dispositivos de hardware. |
-| **Implementadores Concretos** | `RiegoMecanico`, `IluminacionLEDHardware` | Clases técnicas reales que ejecutan las operaciones físicas. |
-| **Cliente** | `Demo.kt` | Conecta las abstracciones con los implementadores y ejecuta el sistema. |
+| **Abstracción** | `InterfazReproductor` | Define la interfaz de control de alto nivel y mantiene la referencia al implementador. |
+| **Abstracción Refinada** | `InterfazMinimalista`, `InterfazAvanzadaEcualizada` | Extienden los tipos de interfaces de usuario añadiendo lógica de control específica. |
+| **Implementador** | `ReproductorAudio` | Define la interfaz de bajo nivel común para todos los motores de audio y hardware. |
+| **Implementadores Concretos** | `MotorAudioAltavoz`, `MotorAudioBluetooth` | Clases técnicas reales que ejecutan el procesamiento de audio físico o inalámbrico. |
+| **Cliente** | `Demo.kt` | Conecta las abstracciones de interfaz con los motores implementadores y ejecuta el sistema. |
 
 ## Kotlin Idiomático
-- **Composición mediante Constructor (`protected val dispositivo`):** Aprovechamos el constructor primario de Kotlin en las clases abstractas para inyectar y almacenar la referencia del implementador de manera limpia y segura.
-- **Interfaces limpias:** Uso de interfaces concisas en Kotlin para definir los contratos de hardware de manera desacoplada.
+- **Composición mediante Constructor (`protected val motor`):** Uso del constructor primario en clases abstractas para inyectar y almacenar la referencia del implementador de forma limpia y segura.
+- **Interfaces desacopladas:** Uso de contratos claros para aislar la lógica de presentación multimedia de los detalles de hardware.
 
 ## Cuándo NO usarlo
-1. **Sistemas cerrados o fijos:** Si tu jerarquía de clases nunca va a cambiar y solo tienes un único dispositivo con un único control, aplicar Bridge añade indirección y complejidad innecesaria.
+1. **Sistemas estáticos o únicos:** Si tu aplicación solo tendrá una única interfaz de usuario y un único motor de audio que jamás cambiarán, usar Bridge añade indirección innecesaria.
+2. **Jerarquías rígidas sin crecimiento:** Si no existe la necesidad de variar dimensiones de forma independiente, la complejidad del patrón no se justifica.
 
 ## Patrones Relacionados
-- **Adapter:** Se usa a menudo para hacer que clases incompatibles trabajen juntas (generalmente después de que el código ya fue escrito). El Bridge se diseña desde un inicio para permitir que abstracción e implementación varíen de forma independiente.
-- **Abstract Factory:** Puede utilizarse para crear y configurar objetos específicos dentro de una jerarquía de Bridge.
+- **Adapter:** Se enfoca en hacer que clases con interfaces incompatibles colaboren (habitualmente de manera reactiva). El Bridge se diseña preventivamente para permitir que dos jerarquías varíen independientemente.
+- **Abstract Factory:** Puede emplearse para crear y ensamblar familias de objetos relacionados bajo la estructura del Bridge.

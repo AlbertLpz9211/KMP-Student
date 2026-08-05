@@ -1,21 +1,20 @@
 package patrones.bridge
 
 fun main() {
-    println("--- BIENVENIDO AL SISTEMA DE PUENTES HARDWARE-CONTROL ---")
+    println("--- BIENVENIDO AL REPRODUCTOR MULTIMEDIA (BRIDGE) ---")
 
-    val riego = RiegoMecanico()
-    val luces = IluminacionLEDHardware()
+    val altavozFisico = MotorAudioAltavoz()
+    val audifonosBT = MotorAudioBluetooth()
 
-    println("\n--- COMBINACIÓN 1: Control de Pared operando el Sistema de Riego ---")
-    val controlRiegoPared = ControlDePared(riego)
-    controlRiegoPared.presionarBotonEncendido()
-    controlRiegoPared.ejecutarComandoEspecial()
-    controlRiegoPared.presionarBotonEncendido()
+    println("\n--- COMBINACIÓN 1: Interfaz Minimalista con Altavoz Físico ---")
+    val playerMinimal = InterfazMinimalista(altavozFisico)
+    playerMinimal.reproducirPista("cancion_rock.mp3")
+    playerMinimal.ajustarAmbienteSonoro(30)
 
-    println("\n--- COMBINACIÓN 2: Panel Automatizado operando la Iluminación LED ---")
-    val panelLucesAvanzado = PanelAutomatizado(luces)
-    panelLucesAvanzado.presionarBotonEncendido()
-    panelLucesAvanzado.ejecutarComandoEspecial()
+    println("\n--- COMBINACIÓN 2: Interfaz Avanzada con Audífonos Bluetooth ---")
+    val playerPro = InterfazAvanzadaEcualizada(audifonosBT)
+    playerPro.reproducirPista("podcast_tech.wav")
+    playerPro.ajustarAmbienteSonoro(70)
 
     println("\n--- DEMOSTRACIÓN BRIDGE FINALIZADA ---")
 }

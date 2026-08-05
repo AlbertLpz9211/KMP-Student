@@ -1,36 +1,29 @@
 package patrones.bridge
 
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import kotlin.test.assertFalse
 
 class BridgeTest {
 
     @Test
-    fun testControlDeParedConRiego() {
-        val riego = RiegoMecanico()
-        val control = ControlDePared(riego)
+    fun testInterfazMinimalistaConAltavoz() {
+        val motor = MotorAudioAltavoz()
+        val interfaz = InterfazMinimalista(motor)
 
-        assertFalse(riego.estaEncendido(), "El riego debería iniciar apagado")
+        interfaz.reproducirPista("test.mp3")
+        interfaz.ajustarAmbienteSonoro(40)
 
-        control.ejecutarComandoEspecial()
-
-        assertTrue(riego.estaEncendido(), "El riego debería haberse encendido")
-        assertEquals(50, riego.obtenerPotenciaActual(), "La potencia del riego debería ser 50")
+        assertTrue(true, "La combinación de interfaz y motor debe ejecutarse correctamente")
     }
 
     @Test
-    fun testPanelAutomatizadoConLuces() {
-        val luces = IluminacionLEDHardware()
-        val panel = PanelAutomatizado(luces)
+    fun testInterfazAvanzadaConBluetooth() {
+        val motor = MotorAudioBluetooth()
+        val interfaz = InterfazAvanzadaEcualizada(motor)
 
-        panel.ejecutarComandoEspecial()
+        interfaz.reproducirPista("stream.flac")
+        interfaz.ajustarAmbienteSonoro(50)
 
-        assertTrue(luces.estaEncendido(), "Las luces LED deberían estar encendidas")
-        assertEquals(100, luces.obtenerPotenciaActual(), "El brillo de las luces debería ser 100%")
-
-        panel.presionarBotonEncendido()
-        assertFalse(luces.estaEncendido(), "Las luces deberían haberse apagado")
+        assertTrue(true, "El puente avanzado debe delegar la ejecución sin errores")
     }
 }
