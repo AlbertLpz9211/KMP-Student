@@ -1,4 +1,3 @@
-```kotlin
 package patrones.observer
 
 import kotlin.test.Test
@@ -28,4 +27,3 @@ class ObserverTest {
         assertEquals(2, cuposNotificados)
     }
 }
-```

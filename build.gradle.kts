@@ -1,30 +1,15 @@
-```kotlin
-package patrones.memento
-
-class MementoPedido internal constructor(
-    internal val cliente: String,
-    internal val producto: String
-)
-
-class BorradorPedidoClasico(
-    var cliente: String = "",
-    var producto: String = ""
-) {
-    // Guarda una copia del estado actual del borrador.
-    fun guardar(): MementoPedido = MementoPedido(cliente, producto)
-
-    fun restaurar(memento: MementoPedido) {
-        cliente = memento.cliente
-        producto = memento.producto
-    }
+plugins {
+    kotlin("jvm")
 }
 
-class HistorialPedido {
-    private val estados = mutableListOf<MementoPedido>()
+dependencies{
+    implementation(kotlin("stdlib-jdk8"))
+}
 
-    fun agregar(memento: MementoPedido) {
-        estados.add(memento)
-    }
+repositories {
+    mavenCentral()
+}
 
-    fun ultimo(): MementoPedido = estados.last()
+kotlin {
+    jvmToolchain(8)
 }

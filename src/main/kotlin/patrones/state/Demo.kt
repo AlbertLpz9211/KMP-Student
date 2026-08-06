@@ -1,4 +1,3 @@
-```kotlin
 package patrones.state
 
 fun ejecutarDemo() {
@@ -16,4 +15,3 @@ fun ejecutarDemo() {
 }
 
 fun main() = ejecutarDemo()
-```

@@ -1,4 +1,3 @@
-```kotlin
 package patrones.state
 
 import kotlin.test.Test
@@ -22,4 +21,3 @@ class StateTest {
         assertEquals("Finalizada", idiomatica.nombreEstado())
     }
 }
-```

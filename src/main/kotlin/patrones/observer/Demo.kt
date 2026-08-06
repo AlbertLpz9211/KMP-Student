@@ -1,4 +1,3 @@
-```kotlin
 package patrones.observer
 
 fun ejecutarDemo() {
@@ -24,4 +23,3 @@ fun ejecutarDemo() {
 }
 
 fun main() = ejecutarDemo()
-```

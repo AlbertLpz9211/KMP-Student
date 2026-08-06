@@ -1,4 +1,3 @@
-```kotlin
 package patrones.memento
 
 class MementoPedido internal constructor(

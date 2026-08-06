@@ -1,4 +1,3 @@
-```kotlin
 package patrones.state
 
 sealed interface EstadoReserva {
@@ -25,4 +24,3 @@ class ReservaIdiomatica(
         EstadoReserva.Finalizada -> "Finalizada"
     }
 }
-```

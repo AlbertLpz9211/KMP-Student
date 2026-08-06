@@ -1,4 +1,3 @@
-```kotlin
 package patrones.memento
 
 // La data class funciona como una instantanea inmutable.
@@ -18,4 +17,3 @@ class BorradorPedidoIdiomatico(
         producto = estado.producto
     }
 }
-```

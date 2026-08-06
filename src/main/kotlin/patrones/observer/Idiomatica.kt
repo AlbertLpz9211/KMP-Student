@@ -1,4 +1,3 @@
-```kotlin
 package patrones.observer
 
 import kotlin.properties.Delegates
@@ -15,4 +14,3 @@ class CursoIdiomatico(cuposIniciales: Int) {
         observadores.add(observador)
     }
 }
-```

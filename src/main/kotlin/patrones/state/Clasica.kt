@@ -1,4 +1,3 @@
-```kotlin
 package patrones.state
 
 interface EstadoReservaClasico {
@@ -34,4 +33,3 @@ class ReservaClasica(
     // La reserva delega la transicion al estado actual.
     fun avanzar() = estado.avanzar(this)
 }
-```

@@ -1,4 +1,3 @@
-```kotlin
 package patrones.memento
 
 fun ejecutarDemo() {
@@ -21,4 +20,3 @@ fun ejecutarDemo() {
 }
 
 fun main() = ejecutarDemo()
-```

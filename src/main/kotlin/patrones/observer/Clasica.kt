@@ -1,4 +1,3 @@
-```kotlin
 package patrones.observer
 
 interface ObservadorCupo {
@@ -34,4 +33,3 @@ class AlumnoObservador(private val nombre: String) : ObservadorCupo {
         ultimoAviso = "$nombre: $curso tiene $cupos cupos"
     }
 }
-```

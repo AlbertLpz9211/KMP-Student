@@ -1,4 +1,3 @@
-```kotlin
 package patrones.memento
 
 import kotlin.test.Test
@@ -21,4 +20,3 @@ class MementoTest {
         assertEquals("Mochila", idiomatico.producto)
     }
 }
-```
