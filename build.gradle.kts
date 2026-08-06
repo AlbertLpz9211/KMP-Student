@@ -1,29 +1,30 @@
-plugins {
-    kotlin("jvm") version "1.9.24"
-    application
+```kotlin
+package patrones.memento
+
+class MementoPedido internal constructor(
+    internal val cliente: String,
+    internal val producto: String
+)
+
+class BorradorPedidoClasico(
+    var cliente: String = "",
+    var producto: String = ""
+) {
+    // Guarda una copia del estado actual del borrador.
+    fun guardar(): MementoPedido = MementoPedido(cliente, producto)
+
+    fun restaurar(memento: MementoPedido) {
+        cliente = memento.cliente
+        producto = memento.producto
+    }
 }
 
-group = "equipo3"
-version = "1.0"
+class HistorialPedido {
+    private val estados = mutableListOf<MementoPedido>()
 
-repositories {
-    mavenCentral()
-}
+    fun agregar(memento: MementoPedido) {
+        estados.add(memento)
+    }
 
-dependencies {
-    testImplementation(kotlin("test-junit5"))
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.10.2")
-}
-
-kotlin {
-    jvmToolchain(17)
-}
-
-tasks.test {
-    useJUnitPlatform()
-}
-
-application {
-    mainClass.set("patrones.CatalogoDemoKt")
+    fun ultimo(): MementoPedido = estados.last()
 }
