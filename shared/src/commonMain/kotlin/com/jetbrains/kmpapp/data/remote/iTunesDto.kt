@@ -1,15 +1,21 @@
 package com.jetbrains.kmpapp.data.remote
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+
+val iTunesJson = Json {
+    ignoreUnknownKeys = true
+    coerceInputValues = true
+}
 
 @Serializable
 data class ITunesResponseDto(
     val resultCount: Int,
-    val results: List<ITunesResultDto>
+    val results: List<ItemDTO>
 )
 
 @Serializable
-data class ITunesResultDto(
+data class ItemDTO(
     val trackId: Long? = null,
     val collectionId: Long? = null,
     val trackName: String? = null,

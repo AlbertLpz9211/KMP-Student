@@ -1,11 +1,11 @@
 package com.jetbrains.kmpapp.data.mapper
 
-import com.jetbrains.kmpapp.data.remote.ITunesResultDto
+import com.jetbrains.kmpapp.data.remote.ItemDTO
 import com.jetbrains.kmpapp.domain.model.Item
 import com.jetbrains.kmpapp.domain.model.ItemDetalle
 
 class ApiMapper {
-    fun toDomain(dto: ITunesResultDto): Item {
+    fun toDomain(dto: ItemDTO): Item {
         return Item(
             id = (dto.trackId ?: dto.collectionId ?: 0).toString(),
             titulo = dto.trackName ?: dto.collectionName ?: "Sin título",
@@ -17,7 +17,7 @@ class ApiMapper {
         )
     }
 
-    fun toDetailDomain(dto: ITunesResultDto): ItemDetalle {
+    fun toDetailDomain(dto: ItemDTO): ItemDetalle {
         return ItemDetalle(
             id = (dto.trackId ?: dto.collectionId ?: 0).toString(),
             titulo = dto.trackName ?: dto.collectionName ?: "Sin título",
