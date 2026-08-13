@@ -26,21 +26,21 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.jetbrains.kmpapp.data.MuseumObject
+import com.jetbrains.kmpapp.domain.model.Item
 import com.jetbrains.kmpapp.screens.EmptyScreenContent
 import org.koin.compose.viewmodel.koinViewModel
 
 @Suppress("FunctionName")
 @Composable
-fun ListScreen(navigateToDetails: (objectId: Int) -> Unit) {
+fun ListScreen(navigateToDetails: (objectId: String) -> Unit) {
     val viewModel = koinViewModel<ListViewModel>()
-    val objects by viewModel.objects.collectAsStateWithLifecycle()
+    val itemList by viewModel.items.collectAsStateWithLifecycle()
 
-    AnimatedContent(objects.isNotEmpty()) { objectsAvailable ->
-        if (objectsAvailable) {
+    AnimatedContent(itemList.isNotEmpty()) { itemsAvailable ->
+        if (itemsAvailable) {
             ObjectGrid(
-                objects = objects,
-                onObjectClick = navigateToDetails,
+                itemList = itemList,
+                onItemClick = navigateToDetails,
             )
         } else {
             EmptyScreenContent(Modifier.fillMaxSize())
@@ -51,8 +51,8 @@ fun ListScreen(navigateToDetails: (objectId: Int) -> Unit) {
 @Suppress("FunctionName")
 @Composable
 private fun ObjectGrid(
-    objects: List<MuseumObject>,
-    onObjectClick: (Int) -> Unit,
+    itemList: List<Item>,
+    onItemClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyVerticalGrid(
@@ -60,10 +60,10 @@ private fun ObjectGrid(
         modifier = modifier.fillMaxSize(),
         contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
     ) {
-        items(objects, key = { it.objectID }) { obj ->
+        items(itemList, key = { it.id }) { item ->
             ObjectFrame(
-                obj = obj,
-                onClick = { onObjectClick(obj.objectID) },
+                item = item,
+                onClick = { onItemClick(item.id) },
             )
         }
     }
@@ -72,7 +72,7 @@ private fun ObjectGrid(
 @Suppress("FunctionName")
 @Composable
 private fun ObjectFrame(
-    obj: MuseumObject,
+    item: Item,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -82,8 +82,8 @@ private fun ObjectFrame(
             .clickable { onClick() },
     ) {
         AsyncImage(
-            model = obj.primaryImageSmall,
-            contentDescription = obj.title,
+            model = item.imagenUrl,
+            contentDescription = item.titulo,
             contentScale = ContentScale.Crop,
             modifier =
                 Modifier
@@ -94,8 +94,12 @@ private fun ObjectFrame(
 
         Spacer(Modifier.height(2.dp))
 
-        Text(obj.title, style = MaterialTheme.typography.titleMedium)
-        Text(obj.artistDisplayName, style = MaterialTheme.typography.bodyMedium)
-        Text(obj.objectDate, style = MaterialTheme.typography.bodySmall)
+        Text(item.titulo, style = MaterialTheme.typography.titleMedium)
+        item.subtitulo?.let {
+            Text(it, style = MaterialTheme.typography.bodyMedium)
+        }
+        item.fecha?.let {
+            Text(it, style = MaterialTheme.typography.bodySmall)
+        }
     }
 }

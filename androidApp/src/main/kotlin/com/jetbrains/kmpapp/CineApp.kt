@@ -2,10 +2,13 @@ package com.jetbrains.kmpapp
 
 import android.app.Application
 import com.jetbrains.kmpapp.di.initKoin
+import org.koin.android.ext.koin.androidContext
 
-class MuseumApp : Application() {
+class CineApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        initKoin()
+        initKoin {
+            androidContext(this@CineApp)
+        }
     }
 }

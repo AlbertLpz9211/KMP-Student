@@ -71,7 +71,6 @@ class ItemLocalDataSource(database: OpenLibraryDatabase) {
 
     suspend fun upsertItems(items: List<Item>) {
         queries.transaction {
-            val now = getCurrentMillis()
             items.forEach { item ->
                 queries.insertItem(
                     id = item.id,
@@ -81,7 +80,7 @@ class ItemLocalDataSource(database: OpenLibraryDatabase) {
                     metrica = item.metrica,
                     fecha = item.fecha,
                     id_ = item.id,
-                    cachedAt = now,
+                    cachedAt = getCurrentMillis(),
                 )
                 queries.deleteTags(item.id)
                 item.tags.forEach { tag ->

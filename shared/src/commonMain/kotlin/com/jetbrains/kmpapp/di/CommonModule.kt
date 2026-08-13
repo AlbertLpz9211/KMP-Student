@@ -7,7 +7,9 @@ import com.jetbrains.kmpapp.db.OpenLibraryDatabase
 import com.jetbrains.kmpapp.domain.repository.OpenLibraryRepository
 import com.jetbrains.kmpapp.domain.usecase.GetItemDetailUseCase
 import com.jetbrains.kmpapp.domain.usecase.SearchItemsUseCase
-import io.ktor.client.HttpClient
+import com.jetbrains.kmpapp.screens.detail.DetailViewModel
+import com.jetbrains.kmpapp.screens.list.ListViewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val commonModule = module {
@@ -25,4 +27,8 @@ val commonModule = module {
     // Use Cases
     factory { SearchItemsUseCase(get()) }
     factory { GetItemDetailUseCase(get()) }
+
+    // ViewModels
+    viewModelOf(::ListViewModel)
+    viewModelOf(::DetailViewModel)
 }

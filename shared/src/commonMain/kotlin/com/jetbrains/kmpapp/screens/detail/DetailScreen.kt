@@ -35,33 +35,25 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.jetbrains.kmpapp.data.MuseumObject
+import com.jetbrains.kmpapp.domain.model.ItemDetalle
 import com.jetbrains.kmpapp.screens.EmptyScreenContent
 import cinekmp.shared.generated.resources.Res
 import cinekmp.shared.generated.resources.back
-import cinekmp.shared.generated.resources.label_artist
-import cinekmp.shared.generated.resources.label_credits
-import cinekmp.shared.generated.resources.label_date
-import cinekmp.shared.generated.resources.label_department
-import cinekmp.shared.generated.resources.label_dimensions
-import cinekmp.shared.generated.resources.label_medium
-import cinekmp.shared.generated.resources.label_repository
-import cinekmp.shared.generated.resources.label_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Suppress("FunctionName")
 @Composable
 fun DetailScreen(
-    objectId: Int,
+    objectId: String,
     navigateBack: () -> Unit,
 ) {
     val viewModel = koinViewModel<DetailViewModel>()
 
-    val obj by viewModel.getObject(objectId).collectAsStateWithLifecycle(initialValue = null)
-    AnimatedContent(obj != null) { objectAvailable ->
-        if (objectAvailable) {
-            ObjectDetails(obj!!, onBackClick = navigateBack)
+    val itemDetalle by viewModel.getObject(objectId).collectAsStateWithLifecycle(initialValue = null)
+    AnimatedContent(itemDetalle != null) { itemAvailable ->
+        if (itemAvailable) {
+            ObjectDetails(itemDetalle!!, onBackClick = navigateBack)
         } else {
             EmptyScreenContent(Modifier.fillMaxSize())
         }
@@ -71,10 +63,11 @@ fun DetailScreen(
 @Suppress("FunctionName")
 @Composable
 private fun ObjectDetails(
-    obj: MuseumObject,
+    itemDetalle: ItemDetalle,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val item = itemDetalle.item
     Scaffold(
         topBar = {
             @OptIn(ExperimentalMaterial3Api::class)
@@ -95,8 +88,8 @@ private fun ObjectDetails(
                 .padding(paddingValues),
         ) {
             AsyncImage(
-                model = obj.primaryImageSmall,
-                contentDescription = obj.title,
+                model = item.imagenUrl,
+                contentDescription = item.titulo,
                 contentScale = ContentScale.FillWidth,
                 modifier =
                     Modifier
@@ -106,16 +99,18 @@ private fun ObjectDetails(
 
             SelectionContainer {
                 Column(Modifier.padding(12.dp)) {
-                    Text(obj.title, style = MaterialTheme.typography.headlineMedium)
+                    Text(item.titulo, style = MaterialTheme.typography.headlineMedium)
                     Spacer(Modifier.height(6.dp))
-                    LabeledInfo(stringResource(Res.string.label_title), obj.title)
-                    LabeledInfo(stringResource(Res.string.label_artist), obj.artistDisplayName)
-                    LabeledInfo(stringResource(Res.string.label_date), obj.objectDate)
-                    LabeledInfo(stringResource(Res.string.label_dimensions), obj.dimensions)
-                    LabeledInfo(stringResource(Res.string.label_medium), obj.medium)
-                    LabeledInfo(stringResource(Res.string.label_department), obj.department)
-                    LabeledInfo(stringResource(Res.string.label_repository), obj.repository)
-                    LabeledInfo(stringResource(Res.string.label_credits), obj.creditLine)
+                    
+                    item.subtitulo?.let {
+                        LabeledInfo("Subtitulo", it)
+                    }
+                    item.fecha?.let {
+                        LabeledInfo("Fecha", it)
+                    }
+                    if (item.tags.isNotEmpty()) {
+                        LabeledInfo("Tags", item.tags.joinToString(", "))
+                    }
                 }
             }
         }
