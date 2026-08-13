@@ -1,0 +1,16 @@
+{
+  "numFound": 1,
+  "start": 0,
+  "numFoundExact": true,
+  "docs": [
+    {
+      "key": "/works/OL27326W",
+      "title": "The Lord of the Rings",
+      "author_name": ["J.R.R. Tolkien"],
+      "first_publish_year": 1954,
+      "cover_i": 8408757,
+      "subject": ["Fantasy", "Adventure"],
+      "ratings_average": 4.5
+    }
+  ]
+}

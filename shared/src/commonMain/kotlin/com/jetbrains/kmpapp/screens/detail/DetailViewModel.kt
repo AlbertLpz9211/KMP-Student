@@ -6,6 +6,5 @@ import com.jetbrains.kmpapp.data.MuseumRepository
 import kotlinx.coroutines.flow.Flow
 
 class DetailViewModel(private val museumRepository: MuseumRepository) : ViewModel() {
-    fun getObject(objectId: Int): Flow<MuseumObject?> =
-        museumRepository.getObjectById(objectId)
+    fun getObject(objectId: Int): Flow<MuseumObject?> = museumRepository.getObjectById(objectId)
 }

@@ -1,0 +1,10 @@
+{
+  "key": "/works/OL12345W",
+  "title": "Minimalist Book",
+  "authors": [
+    {
+      "author": { "key": "/authors/OL123A" }
+    }
+  ],
+  "first_publish_date": "2023"
+}

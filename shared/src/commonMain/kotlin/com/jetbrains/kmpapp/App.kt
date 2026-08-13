@@ -21,10 +21,11 @@ object ListDestination
 @Serializable
 data class DetailDestination(val objectId: Int)
 
+@Suppress("FunctionName")
 @Composable
 fun App() {
     MaterialTheme(
-        colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()
+        colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme(),
     ) {
         Surface {
             val navController: NavHostController = rememberNavController()
@@ -39,7 +40,7 @@ fun App() {
                         objectId = backStackEntry.toRoute<DetailDestination>().objectId,
                         navigateBack = {
                             navController.popBackStack()
-                        }
+                        },
                     )
                 }
             }

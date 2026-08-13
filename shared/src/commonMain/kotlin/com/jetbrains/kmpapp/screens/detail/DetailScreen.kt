@@ -50,6 +50,7 @@ import kmp_app_template.shared.generated.resources.label_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+@Suppress("FunctionName")
 @Composable
 fun DetailScreen(
     objectId: Int,
@@ -67,6 +68,7 @@ fun DetailScreen(
     }
 }
 
+@Suppress("FunctionName")
 @Composable
 private fun ObjectDetails(
     obj: MuseumObject,
@@ -82,7 +84,7 @@ private fun ObjectDetails(
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back))
                     }
-                }
+                },
             )
         },
         modifier = modifier.windowInsetsPadding(WindowInsets.systemBars),
@@ -90,15 +92,16 @@ private fun ObjectDetails(
         Column(
             Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(paddingValues)
+                .padding(paddingValues),
         ) {
             AsyncImage(
                 model = obj.primaryImageSmall,
                 contentDescription = obj.title,
                 contentScale = ContentScale.FillWidth,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.LightGray)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .background(Color.LightGray),
             )
 
             SelectionContainer {
@@ -119,6 +122,7 @@ private fun ObjectDetails(
     }
 }
 
+@Suppress("FunctionName")
 @Composable
 private fun LabeledInfo(
     label: String,
@@ -133,7 +137,7 @@ private fun LabeledInfo(
                     append("$label: ")
                 }
                 append(data)
-            }
+            },
         )
     }
 }
