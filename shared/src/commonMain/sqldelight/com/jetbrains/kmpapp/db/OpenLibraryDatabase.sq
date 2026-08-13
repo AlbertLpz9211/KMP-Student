@@ -1,0 +1,75 @@
+CREATE TABLE ItemEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    titulo TEXT NOT NULL,
+    subtitulo TEXT,
+    imagenUrl TEXT,
+    metrica REAL,
+    fecha TEXT,
+    isFavorite INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0,
+    cachedAt INTEGER NOT NULL
+);
+
+CREATE TABLE TagEntity (
+    itemId TEXT NOT NULL,
+    tag TEXT NOT NULL,
+    PRIMARY KEY (itemId, tag),
+    FOREIGN KEY (itemId) REFERENCES ItemEntity(id) ON DELETE CASCADE
+);
+
+CREATE TABLE ItemDetalleEntity (
+    itemId TEXT NOT NULL PRIMARY KEY,
+    descripcion TEXT NOT NULL,
+    FOREIGN KEY (itemId) REFERENCES ItemEntity(id) ON DELETE CASCADE
+);
+
+CREATE TABLE AtributoEntity (
+    itemId TEXT NOT NULL,
+    etiqueta TEXT NOT NULL,
+    valor TEXT NOT NULL,
+    PRIMARY KEY (itemId, etiqueta, valor),
+    FOREIGN KEY (itemId) REFERENCES ItemDetalleEntity(itemId) ON DELETE CASCADE
+);
+
+-- Queries
+insertItem:
+INSERT OR REPLACE INTO ItemEntity(id, titulo, subtitulo, imagenUrl, metrica, fecha, isFavorite, cachedAt)
+VALUES (?, ?, ?, ?, ?, ?,
+    COALESCE((SELECT isFavorite FROM ItemEntity WHERE id = ?), 0),
+    ?
+);
+
+insertTag:
+INSERT OR REPLACE INTO TagEntity(itemId, tag) VALUES (?, ?);
+
+deleteTags:
+DELETE FROM TagEntity WHERE itemId = ?;
+
+insertDetalle:
+INSERT OR REPLACE INTO ItemDetalleEntity(itemId, descripcion) VALUES (?, ?);
+
+insertAtributo:
+INSERT OR REPLACE INTO AtributoEntity(itemId, etiqueta, valor) VALUES (?, ?, ?);
+
+deleteAtributos:
+DELETE FROM AtributoEntity WHERE itemId = ?;
+
+selectAllItems:
+SELECT * FROM ItemEntity ORDER BY cachedAt DESC;
+
+selectTagsForItem:
+SELECT tag FROM TagEntity WHERE itemId = ?;
+
+selectDetailById:
+SELECT * FROM ItemDetalleEntity WHERE itemId = ?;
+
+selectAtributosForDetail:
+SELECT etiqueta, valor FROM AtributoEntity WHERE itemId = ?;
+
+updateFavorite:
+UPDATE ItemEntity SET isFavorite = ? WHERE id = ?;
+
+deleteNonFavoriteItemsOlderThan:
+DELETE FROM ItemEntity WHERE isFavorite = 0 AND cachedAt < ?;
+
+selectItemById:
+SELECT * FROM ItemEntity WHERE id = ?;
