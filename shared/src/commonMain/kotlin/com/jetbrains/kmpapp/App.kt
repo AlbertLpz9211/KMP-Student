@@ -1,11 +1,13 @@
 package com.jetbrains.kmpapp
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,6 +16,7 @@ import androidx.navigation.toRoute
 import com.jetbrains.kmpapp.screens.detail.DetailScreen
 import com.jetbrains.kmpapp.screens.list.ListScreen
 import kotlinx.serialization.Serializable
+import org.koin.compose.viewmodel.koinViewModel
 
 @Serializable
 object ListDestination
@@ -24,16 +27,25 @@ data class DetailDestination(val objectId: String)
 @Suppress("FunctionName")
 @Composable
 fun App() {
+    val themeViewModel = koinViewModel<ThemeViewModel>()
+    val isDarkModeOverride by themeViewModel.isDarkMode.collectAsState()
+    
+    val useDarkMode = isDarkModeOverride ?: isSystemInDarkTheme()
+
     MaterialTheme(
-        colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme(),
+        colorScheme = if (useDarkMode) darkColorScheme() else lightColorScheme(),
     ) {
         Surface {
             val navController: NavHostController = rememberNavController()
             NavHost(navController = navController, startDestination = ListDestination) {
                 composable<ListDestination> {
-                    ListScreen(navigateToDetails = { objectId ->
-                        navController.navigate(DetailDestination(objectId))
-                    })
+                    ListScreen(
+                        navigateToDetails = { objectId ->
+                            navController.navigate(DetailDestination(objectId))
+                        },
+                        isDarkMode = useDarkMode,
+                        onToggleTheme = { themeViewModel.setDarkMode(!useDarkMode) }
+                    )
                 }
                 composable<DetailDestination> { backStackEntry ->
                     DetailScreen(

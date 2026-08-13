@@ -16,15 +16,10 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -53,7 +48,11 @@ fun DetailScreen(
     val itemDetalle by viewModel.getObject(objectId).collectAsStateWithLifecycle(initialValue = null)
     AnimatedContent(itemDetalle != null) { itemAvailable ->
         if (itemAvailable) {
-            ObjectDetails(itemDetalle!!, onBackClick = navigateBack)
+            ObjectDetails(
+                itemDetalle = itemDetalle!!, 
+                onBackClick = navigateBack,
+                onToggleFavorite = { viewModel.toggleFavorite(objectId, !itemDetalle!!.item.isFavorite) }
+            )
         } else {
             EmptyScreenContent(Modifier.fillMaxSize())
         }
@@ -65,6 +64,7 @@ fun DetailScreen(
 private fun ObjectDetails(
     itemDetalle: ItemDetalle,
     onBackClick: () -> Unit,
+    onToggleFavorite: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val item = itemDetalle.item
@@ -78,6 +78,15 @@ private fun ObjectDetails(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back))
                     }
                 },
+                actions = {
+                    IconButton(onClick = onToggleFavorite) {
+                        Icon(
+                            imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = "Toggle Favorite",
+                            tint = if (item.isFavorite) Color.Red else LocalContentColor.current
+                        )
+                    }
+                }
             )
         },
         modifier = modifier.windowInsetsPadding(WindowInsets.systemBars),

@@ -34,6 +34,29 @@ class ItemLocalDataSource(database: OpenLibraryDatabase) {
                         metrica = entity.metrica,
                         fecha = entity.fecha,
                         tags = tags,
+                        isFavorite = entity.isFavorite,
+                    )
+                }
+            }
+            combine(itemFlows) { it.toList() }
+        }
+    }
+
+    fun getFavoriteItems(): Flow<List<Item>> {
+        return queries.selectFavoriteItems().asFlow().mapToList(Dispatchers.IO).flatMapLatest { entities ->
+            if (entities.isEmpty()) return@flatMapLatest flowOf(emptyList())
+
+            val itemFlows = entities.map { entity ->
+                queries.selectTagsForItem(entity.id).asFlow().mapToList(Dispatchers.IO).map { tags ->
+                    Item(
+                        id = entity.id,
+                        titulo = entity.titulo,
+                        subtitulo = entity.subtitulo,
+                        imagenUrl = entity.imagenUrl,
+                        metrica = entity.metrica,
+                        fecha = entity.fecha,
+                        tags = tags,
+                        isFavorite = entity.isFavorite,
                     )
                 }
             }
@@ -58,6 +81,7 @@ class ItemLocalDataSource(database: OpenLibraryDatabase) {
                 metrica = itemEntity.metrica,
                 fecha = itemEntity.fecha,
                 tags = tags,
+                isFavorite = itemEntity.isFavorite,
             )
 
             ItemDetalle(

@@ -7,5 +7,6 @@ import kotlinx.coroutines.flow.Flow
 interface OpenLibraryRepository {
     fun search(query: String): Flow<Result<List<Item>>>
     fun getDetail(id: String): Flow<Result<ItemDetalle>>
+    fun getFavorites(): Flow<List<Item>>
     suspend fun toggleFavorite(id: String, isFavorite: Boolean)
 }

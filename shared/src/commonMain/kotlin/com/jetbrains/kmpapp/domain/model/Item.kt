@@ -8,4 +8,5 @@ data class Item(
     val metrica: Double?,
     val fecha: String?,
     val tags: List<String>,
+    val isFavorite: Boolean = false,
 )

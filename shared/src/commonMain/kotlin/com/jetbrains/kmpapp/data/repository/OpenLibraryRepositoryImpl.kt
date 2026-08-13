@@ -67,4 +67,8 @@ class OpenLibraryRepositoryImpl(
     override suspend fun toggleFavorite(id: String, isFavorite: Boolean) {
         localDataSource.toggleFavorite(id, isFavorite)
     }
+
+    override fun getFavorites(): Flow<List<Item>> {
+        return localDataSource.getFavoriteItems()
+    }
 }

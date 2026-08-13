@@ -73,3 +73,6 @@ DELETE FROM ItemEntity WHERE isFavorite = 0 AND cachedAt < ?;
 
 selectItemById:
 SELECT * FROM ItemEntity WHERE id = ?;
+
+selectFavoriteItems:
+SELECT * FROM ItemEntity WHERE isFavorite = 1 ORDER BY cachedAt DESC;
