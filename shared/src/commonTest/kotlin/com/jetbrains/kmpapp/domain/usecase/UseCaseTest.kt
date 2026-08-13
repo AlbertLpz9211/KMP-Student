@@ -19,6 +19,7 @@ class UseCaseTest {
 
         override fun search(query: String): Flow<Result<List<Item>>> = flowOf(searchResult)
         override fun getDetail(id: String): Flow<Result<ItemDetalle>> = flowOf(detailResult)
+        override suspend fun toggleFavorite(id: String, isFavorite: Boolean) {}
     }
 
     @Test

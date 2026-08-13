@@ -9,12 +9,12 @@ import com.jetbrains.kmpapp.domain.model.Item
 import com.jetbrains.kmpapp.domain.model.ItemDetalle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.IO
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ItemLocalDataSource(database: OpenLibraryDatabase) {
@@ -71,7 +71,7 @@ class ItemLocalDataSource(database: OpenLibraryDatabase) {
 
     suspend fun upsertItems(items: List<Item>) {
         queries.transaction {
-            val now = 0L // Workaround for Clock issue
+            val now = getCurrentMillis()
             items.forEach { item ->
                 queries.insertItem(
                     id = item.id,

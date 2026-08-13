@@ -10,3 +10,5 @@ actual class DriverFactory(private val context: Context) {
         return AndroidSqliteDriver(OpenLibraryDatabase.Schema, context, "openlibrary.db")
     }
 }
+
+actual fun getCurrentMillis(): Long = System.currentTimeMillis()
