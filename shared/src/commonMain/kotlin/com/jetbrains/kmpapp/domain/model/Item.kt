@@ -1,5 +1,12 @@
 package com.jetbrains.kmpapp.domain.model
 
+enum class BookStatus {
+    NONE,
+    POR_LEER,
+    LEYENDO,
+    TERMINADO
+}
+
 data class Item(
     val id: String,
     val titulo: String,
@@ -9,4 +16,5 @@ data class Item(
     val fecha: String?,
     val tags: List<String>,
     val isFavorite: Boolean = false,
+    val status: BookStatus = BookStatus.NONE,
 )

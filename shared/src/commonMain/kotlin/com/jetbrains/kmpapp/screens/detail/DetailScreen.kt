@@ -29,6 +29,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.jetbrains.kmpapp.domain.model.BookStatus
 import com.jetbrains.kmpapp.domain.model.Item
 import com.jetbrains.kmpapp.domain.model.ItemDetalle
 import com.jetbrains.kmpapp.screens.EmptyScreenContent
@@ -55,6 +56,7 @@ fun DetailScreen(
                 itemDetalle = targetDetail, 
                 onBackClick = navigateBack,
                 onToggleFavorite = { viewModel.toggleFavorite(objectId, !targetDetail.item.isFavorite) },
+                onStatusChange = { status -> viewModel.updateStatus(objectId, status) },
                 onRelatedClick = { id -> 
                     // This would need navigation
                 }
@@ -72,6 +74,7 @@ private fun ObjectDetails(
     itemDetalle: ItemDetalle,
     onBackClick: () -> Unit,
     onToggleFavorite: () -> Unit,
+    onStatusChange: (BookStatus) -> Unit,
     onRelatedClick: (String) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -156,6 +159,64 @@ private fun ObjectDetails(
                         )
                     }
                     
+                    Spacer(Modifier.height(16.dp))
+
+                    Text("Estado de lectura", style = MaterialTheme.typography.titleLarge)
+                    Spacer(Modifier.height(8.dp))
+                    
+                    var expanded by remember { mutableStateOf(false) }
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
+                        onExpandedChange = { expanded = !expanded }
+                    ) {
+                        OutlinedTextField(
+                            value = when(item.status) {
+                                BookStatus.POR_LEER -> "Por leer"
+                                BookStatus.LEYENDO -> "Leyendo"
+                                BookStatus.TERMINADO -> "Terminado"
+                                else -> "Sin asignar"
+                            },
+                            onValueChange = {},
+                            readOnly = true,
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                            modifier = Modifier.menuAnchor().fillMaxWidth(),
+                            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Sin asignar") },
+                                onClick = {
+                                    onStatusChange(BookStatus.NONE)
+                                    expanded = false
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Por leer") },
+                                onClick = {
+                                    onStatusChange(BookStatus.POR_LEER)
+                                    expanded = false
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Leyendo") },
+                                onClick = {
+                                    onStatusChange(BookStatus.LEYENDO)
+                                    expanded = false
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Terminado") },
+                                onClick = {
+                                    onStatusChange(BookStatus.TERMINADO)
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+
                     Spacer(Modifier.height(16.dp))
                     
                     Text("Descripción", style = MaterialTheme.typography.titleLarge)

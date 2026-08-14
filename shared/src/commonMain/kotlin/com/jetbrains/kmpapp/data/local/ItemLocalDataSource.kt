@@ -5,6 +5,7 @@ import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.jetbrains.kmpapp.db.OpenLibraryDatabase
 import com.jetbrains.kmpapp.domain.model.Atributo
+import com.jetbrains.kmpapp.domain.model.BookStatus
 import com.jetbrains.kmpapp.domain.model.Item
 import com.jetbrains.kmpapp.domain.model.ItemDetalle
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +36,7 @@ class ItemLocalDataSource(database: OpenLibraryDatabase) {
                         fecha = entity.fecha,
                         tags = tags,
                         isFavorite = entity.isFavorite,
+                        status = try { BookStatus.valueOf(entity.status) } catch (_: Exception) { BookStatus.NONE }
                     )
                 }
             }
@@ -57,6 +59,30 @@ class ItemLocalDataSource(database: OpenLibraryDatabase) {
                         fecha = entity.fecha,
                         tags = tags,
                         isFavorite = entity.isFavorite,
+                        status = try { BookStatus.valueOf(entity.status) } catch (_: Exception) { BookStatus.NONE }
+                    )
+                }
+            }
+            combine(itemFlows) { it.toList() }
+        }
+    }
+
+    fun getMyBooks(): Flow<List<Item>> {
+        return queries.selectMyBooks().asFlow().mapToList(Dispatchers.IO).flatMapLatest { entities ->
+            if (entities.isEmpty()) return@flatMapLatest flowOf(emptyList())
+
+            val itemFlows = entities.map { entity ->
+                queries.selectTagsForItem(entity.id).asFlow().mapToList(Dispatchers.IO).map { tags ->
+                    Item(
+                        id = entity.id,
+                        titulo = entity.titulo,
+                        subtitulo = entity.subtitulo,
+                        imagenUrl = entity.imagenUrl,
+                        metrica = entity.metrica,
+                        fecha = entity.fecha,
+                        tags = tags,
+                        isFavorite = entity.isFavorite,
+                        status = try { BookStatus.valueOf(entity.status) } catch (_: Exception) { BookStatus.NONE }
                     )
                 }
             }
@@ -82,6 +108,7 @@ class ItemLocalDataSource(database: OpenLibraryDatabase) {
                 fecha = itemEntity.fecha,
                 tags = tags,
                 isFavorite = itemEntity.isFavorite,
+                status = try { BookStatus.valueOf(itemEntity.status) } catch (_: Exception) { BookStatus.NONE }
             )
 
             ItemDetalle(
@@ -103,7 +130,6 @@ class ItemLocalDataSource(database: OpenLibraryDatabase) {
                     imagenUrl = item.imagenUrl,
                     metrica = item.metrica,
                     fecha = item.fecha,
-                    id_ = item.id,
                     cachedAt = getCurrentMillis(),
                 )
                 queries.deleteTags(item.id)
@@ -126,6 +152,10 @@ class ItemLocalDataSource(database: OpenLibraryDatabase) {
 
     suspend fun toggleFavorite(id: String, isFavorite: Boolean) {
         queries.updateFavorite(isFavorite, id)
+    }
+
+    suspend fun updateBookStatus(id: String, status: BookStatus) {
+        queries.updateStatus(status.name, id)
     }
 
     suspend fun clearOldCache(threshold: Long) {

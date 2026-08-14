@@ -3,6 +3,7 @@ package com.jetbrains.kmpapp.data.repository
 import com.jetbrains.kmpapp.data.local.ItemLocalDataSource
 import com.jetbrains.kmpapp.data.remote.OpenLibraryApi
 import com.jetbrains.kmpapp.data.remote.mapper.toDomain
+import com.jetbrains.kmpapp.domain.model.BookStatus
 import com.jetbrains.kmpapp.domain.model.Item
 import com.jetbrains.kmpapp.domain.model.ItemDetalle
 import com.jetbrains.kmpapp.domain.repository.OpenLibraryRepository
@@ -68,7 +69,15 @@ class OpenLibraryRepositoryImpl(
         localDataSource.toggleFavorite(id, isFavorite)
     }
 
+    override suspend fun updateBookStatus(id: String, status: BookStatus) {
+        localDataSource.updateBookStatus(id, status)
+    }
+
     override fun getFavorites(): Flow<List<Item>> {
         return localDataSource.getFavoriteItems()
+    }
+
+    override fun getMyBooks(): Flow<List<Item>> {
+        return localDataSource.getMyBooks()
     }
 }

@@ -7,8 +7,10 @@ import com.jetbrains.kmpapp.db.OpenLibraryDatabase
 import com.jetbrains.kmpapp.domain.repository.OpenLibraryRepository
 import com.jetbrains.kmpapp.domain.usecase.GetFavoritesUseCase
 import com.jetbrains.kmpapp.domain.usecase.GetItemDetailUseCase
+import com.jetbrains.kmpapp.domain.usecase.GetMyBooksUseCase
 import com.jetbrains.kmpapp.domain.usecase.SearchItemsUseCase
 import com.jetbrains.kmpapp.domain.usecase.ToggleFavoriteUseCase
+import com.jetbrains.kmpapp.domain.usecase.UpdateBookStatusUseCase
 import com.jetbrains.kmpapp.screens.detail.DetailViewModel
 import com.jetbrains.kmpapp.screens.list.ListViewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -32,7 +34,9 @@ val commonModule = module {
     factory { SearchItemsUseCase(get()) }
     factory { GetItemDetailUseCase(get()) }
     factory { GetFavoritesUseCase(get()) }
+    factory { GetMyBooksUseCase(get()) }
     factory { ToggleFavoriteUseCase(get()) }
+    factory { UpdateBookStatusUseCase(get()) }
 
     // ViewModels
     viewModelOf(::ListViewModel)

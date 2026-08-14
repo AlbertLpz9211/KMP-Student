@@ -6,6 +6,7 @@ CREATE TABLE ItemEntity (
     metrica REAL,
     fecha TEXT,
     isFavorite INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0,
+    status TEXT NOT NULL DEFAULT 'NONE',
     cachedAt INTEGER NOT NULL
 );
 
@@ -32,10 +33,11 @@ CREATE TABLE AtributoEntity (
 
 -- Queries
 insertItem:
-INSERT OR REPLACE INTO ItemEntity(id, titulo, subtitulo, imagenUrl, metrica, fecha, isFavorite, cachedAt)
-VALUES (?, ?, ?, ?, ?, ?,
-    COALESCE((SELECT isFavorite FROM ItemEntity WHERE id = ?), 0),
-    ?
+INSERT OR REPLACE INTO ItemEntity(id, titulo, subtitulo, imagenUrl, metrica, fecha, isFavorite, status, cachedAt)
+VALUES (:id, :titulo, :subtitulo, :imagenUrl, :metrica, :fecha,
+    COALESCE((SELECT isFavorite FROM ItemEntity WHERE id = :id), 0),
+    COALESCE((SELECT status FROM ItemEntity WHERE id = :id), 'NONE'),
+    :cachedAt
 );
 
 insertTag:
@@ -76,3 +78,9 @@ SELECT * FROM ItemEntity WHERE id = ?;
 
 selectFavoriteItems:
 SELECT * FROM ItemEntity WHERE isFavorite = 1 ORDER BY cachedAt DESC;
+
+updateStatus:
+UPDATE ItemEntity SET status = ? WHERE id = ?;
+
+selectMyBooks:
+SELECT * FROM ItemEntity WHERE status != 'NONE' ORDER BY cachedAt DESC;

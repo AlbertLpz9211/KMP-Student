@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jetbrains.kmpapp.domain.model.Item
 import com.jetbrains.kmpapp.domain.usecase.GetFavoritesUseCase
+import com.jetbrains.kmpapp.domain.usecase.GetMyBooksUseCase
 import com.jetbrains.kmpapp.domain.usecase.SearchItemsUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,8 @@ import kotlinx.coroutines.flow.stateIn
 @OptIn(ExperimentalCoroutinesApi::class)
 class ListViewModel(
     searchItemsUseCase: SearchItemsUseCase,
-    getFavoritesUseCase: GetFavoritesUseCase
+    getFavoritesUseCase: GetFavoritesUseCase,
+    getMyBooksUseCase: GetMyBooksUseCase
 ) : ViewModel() {
     private val _query = MutableStateFlow("Kotlin")
 
@@ -29,6 +31,9 @@ class ListViewModel(
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val favorites: StateFlow<List<Item>> = getFavoritesUseCase()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val myBooks: StateFlow<List<Item>> = getMyBooksUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun onQueryChange(newQuery: String) {

@@ -4,11 +4,14 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LightMode
@@ -25,6 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.jetbrains.kmpapp.domain.model.BookStatus
 import com.jetbrains.kmpapp.domain.model.Item
 import com.jetbrains.kmpapp.screens.EmptyScreenContent
 import org.koin.compose.viewmodel.koinViewModel
@@ -40,13 +44,14 @@ fun ListScreen(
     val viewModel = koinViewModel<ListViewModel>()
     val itemList by viewModel.items.collectAsStateWithLifecycle()
     val favorites by viewModel.favorites.collectAsStateWithLifecycle()
+    val myBooks by viewModel.myBooks.collectAsStateWithLifecycle()
     
     var selectedTab by remember { mutableStateOf(0) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("CineKMP", fontWeight = FontWeight.Bold) },
+                title = { Text("Open Library", fontWeight = FontWeight.Bold) },
                 actions = {
                     IconButton(onClick = onToggleTheme) {
                         Icon(
@@ -74,11 +79,15 @@ fun ListScreen(
                     icon = { Icon(Icons.Default.Favorite, contentDescription = "Favorites") },
                     label = { Text("Favoritos") }
                 )
+                NavigationBarItem(
+                    selected = selectedTab == 2,
+                    onClick = { selectedTab = 2 },
+                    icon = { Icon(Icons.Default.Bookmark, contentDescription = "My Books") },
+                    label = { Text("Mis libros") }
+                )
             }
         }
     ) { padding ->
-        val displayList = if (selectedTab == 0) itemList else favorites
-        
         Column(modifier = Modifier.padding(padding)) {
             if (selectedTab == 0) {
                 var searchText by remember { mutableStateOf("Kotlin") }
@@ -91,7 +100,7 @@ fun ListScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp),
-                    placeholder = { Text("Buscar películas o libros...") },
+                    placeholder = { Text("Buscar libros...") },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                     shape = RoundedCornerShape(24.dp),
                     singleLine = true,
@@ -100,6 +109,45 @@ fun ListScreen(
                         unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                     )
                 )
+            }
+
+            var selectedStatus by remember { mutableStateOf(BookStatus.POR_LEER) }
+            
+            if (selectedTab == 2) {
+                SecondaryScrollableTabRow(
+                    selectedTabIndex = when(selectedStatus) {
+                        BookStatus.POR_LEER -> 0
+                        BookStatus.LEYENDO -> 1
+                        BookStatus.TERMINADO -> 2
+                        else -> 0
+                    },
+                    edgePadding = 16.dp,
+                    containerColor = Color.Transparent,
+                    divider = {}
+                ) {
+                    Tab(
+                        selected = selectedStatus == BookStatus.POR_LEER,
+                        onClick = { selectedStatus = BookStatus.POR_LEER },
+                        text = { Text("Por leer") }
+                    )
+                    Tab(
+                        selected = selectedStatus == BookStatus.LEYENDO,
+                        onClick = { selectedStatus = BookStatus.LEYENDO },
+                        text = { Text("Leyendo") }
+                    )
+                    Tab(
+                        selected = selectedStatus == BookStatus.TERMINADO,
+                        onClick = { selectedStatus = BookStatus.TERMINADO },
+                        text = { Text("Terminados") }
+                    )
+                }
+            }
+
+            val displayList = when (selectedTab) {
+                0 -> itemList
+                1 -> favorites
+                2 -> myBooks.filter { it.status == selectedStatus }
+                else -> itemList
             }
 
             AnimatedContent(
@@ -114,8 +162,17 @@ fun ListScreen(
                 } else {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
-                            if (selectedTab == 0) "No se encontraron resultados" 
-                            else "Aún no tienes favoritos",
+                            when (selectedTab) {
+                                0 -> "No se encontraron resultados"
+                                1 -> "Aún no tienes favoritos"
+                                2 -> "No hay libros en '${when(selectedStatus) {
+                                    BookStatus.POR_LEER -> "Por leer"
+                                    BookStatus.LEYENDO -> "Leyendo"
+                                    BookStatus.TERMINADO -> "Terminados"
+                                    else -> ""
+                                }}'"
+                                else -> ""
+                            },
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
