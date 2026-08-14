@@ -20,6 +20,10 @@ class UseCaseTest {
         override fun search(query: String): Flow<Result<List<Item>>> = flowOf(searchResult)
         override fun getDetail(id: String): Flow<Result<ItemDetalle>> = flowOf(detailResult)
         override suspend fun toggleFavorite(id: String, isFavorite: Boolean) {}
+        override fun getFavorites(): Flow<List<Item>> = flowOf(emptyList())
+        override fun getMyBooks(): Flow<List<Item>> = flowOf(emptyList())
+        override fun getAllItems(): Flow<List<Item>> = flowOf(emptyList())
+        override suspend fun updateBookStatus(id: String, status: com.jetbrains.kmpapp.domain.model.BookStatus) {}
     }
 
     @Test
