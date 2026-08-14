@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.jetbrains.kmpapp.screens.DetalleScreen
+import com.jetbrains.kmpapp.ui.theme.NeonTheme
 import kotlinx.serialization.Serializable
 import com.jetbrains.kmpapp.screens.ListaScreen
 
@@ -23,9 +24,7 @@ data class DetailDestination(val itemId: String)
 
 @Composable
 fun App() {
-    MaterialTheme(
-        colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()
-    ) {
+    NeonTheme {
         Surface {
             val navController: NavHostController = rememberNavController()
             NavHost(navController = navController, startDestination = ListDestination) {
