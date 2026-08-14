@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
@@ -57,7 +58,10 @@ fun ListScreen(
             )
         },
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                tonalElevation = 0.dp
+            ) {
                 NavigationBarItem(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
@@ -77,13 +81,34 @@ fun ListScreen(
         
         Column(modifier = Modifier.padding(padding)) {
             if (selectedTab == 0) {
-                // Search bar could go here
+                var searchText by remember { mutableStateOf("Kotlin") }
+                OutlinedTextField(
+                    value = searchText,
+                    onValueChange = { 
+                        searchText = it
+                        viewModel.onQueryChange(it)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    placeholder = { Text("Buscar películas o libros...") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    shape = RoundedCornerShape(24.dp),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                    )
+                )
             }
 
-            AnimatedContent(displayList.isNotEmpty()) { itemsAvailable ->
-                if (itemsAvailable) {
+            AnimatedContent(
+                targetState = displayList,
+                label = "GridAnimation"
+            ) { list ->
+                if (list.isNotEmpty()) {
                     ObjectGrid(
-                        itemList = displayList,
+                        itemList = list,
                         onItemClick = navigateToDetails,
                     )
                 } else {
@@ -91,7 +116,8 @@ fun ListScreen(
                         Text(
                             if (selectedTab == 0) "No se encontraron resultados" 
                             else "Aún no tienes favoritos",
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -108,11 +134,11 @@ private fun ObjectGrid(
     modifier: Modifier = Modifier,
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(160.dp),
+        columns = GridCells.Adaptive(110.dp),
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(itemList, key = { it.id }) { item ->
             ObjectFrame(
@@ -131,35 +157,60 @@ private fun ObjectFrame(
     modifier: Modifier = Modifier,
 ) {
     Card(
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(8.dp),
         modifier = modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Column {
-            AsyncImage(
-                model = item.imagenUrl,
-                contentDescription = item.titulo,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(0.7f)
-                    .background(Color.LightGray),
-            )
+            Box {
+                AsyncImage(
+                    model = item.imagenUrl,
+                    contentDescription = item.titulo,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(0.7f)
+                        .background(Color.LightGray),
+                )
+                
+                if (item.isFavorite) {
+                    Surface(
+                        shape = RoundedCornerShape(bottomStart = 8.dp),
+                        color = Color.White.copy(alpha = 0.8f),
+                        modifier = Modifier.align(Alignment.TopEnd)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Favorite,
+                            contentDescription = null,
+                            tint = Color.Red,
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .size(16.dp)
+                        )
+                    }
+                }
+            }
 
-            Column(Modifier.padding(8.dp)) {
+            Column(Modifier.padding(6.dp)) {
                 Text(
                     item.titulo, 
-                    style = MaterialTheme.typography.titleSmall,
-                    maxLines = 1,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.labelMedium,
+                    maxLines = 2,
+                    fontWeight = FontWeight.Bold,
+                    overflow = TextOverflow.Ellipsis
                 )
                 item.subtitulo?.let {
                     Text(
                         it, 
                         style = MaterialTheme.typography.bodySmall,
-                        maxLines = 1
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
