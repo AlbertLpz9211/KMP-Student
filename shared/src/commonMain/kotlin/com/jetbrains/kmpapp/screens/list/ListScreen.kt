@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -43,6 +44,7 @@ fun ListScreen(
 ) {
     val viewModel = koinViewModel<ListViewModel>()
     val itemList by viewModel.items.collectAsStateWithLifecycle()
+    val allItems by viewModel.allItems.collectAsStateWithLifecycle()
     val favorites by viewModel.favorites.collectAsStateWithLifecycle()
     val myBooks by viewModel.myBooks.collectAsStateWithLifecycle()
     
@@ -70,18 +72,24 @@ fun ListScreen(
                 NavigationBarItem(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
-                    icon = { Icon(Icons.Default.Search, contentDescription = "Search") },
-                    label = { Text("Explorar") }
+                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                    label = { Text("Inicio") }
                 )
                 NavigationBarItem(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    icon = { Icon(Icons.Default.Favorite, contentDescription = "Favorites") },
-                    label = { Text("Favoritos") }
+                    icon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                    label = { Text("Explorar") }
                 )
                 NavigationBarItem(
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
+                    icon = { Icon(Icons.Default.Favorite, contentDescription = "Favorites") },
+                    label = { Text("Favoritos") }
+                )
+                NavigationBarItem(
+                    selected = selectedTab == 3,
+                    onClick = { selectedTab = 3 },
                     icon = { Icon(Icons.Default.Bookmark, contentDescription = "My Books") },
                     label = { Text("Mis libros") }
                 )
@@ -89,7 +97,7 @@ fun ListScreen(
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
-            if (selectedTab == 0) {
+            if (selectedTab == 1) {
                 var searchText by remember { mutableStateOf("Kotlin") }
                 OutlinedTextField(
                     value = searchText,
@@ -113,7 +121,7 @@ fun ListScreen(
 
             var selectedStatus by remember { mutableStateOf(BookStatus.POR_LEER) }
             
-            if (selectedTab == 2) {
+            if (selectedTab == 3) {
                 SecondaryScrollableTabRow(
                     selectedTabIndex = when(selectedStatus) {
                         BookStatus.POR_LEER -> 0
@@ -144,10 +152,11 @@ fun ListScreen(
             }
 
             val displayList = when (selectedTab) {
-                0 -> itemList
-                1 -> favorites
-                2 -> myBooks.filter { it.status == selectedStatus }
-                else -> itemList
+                0 -> allItems
+                1 -> itemList
+                2 -> favorites
+                3 -> myBooks.filter { it.status == selectedStatus }
+                else -> allItems
             }
 
             AnimatedContent(
@@ -163,9 +172,10 @@ fun ListScreen(
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
                             when (selectedTab) {
-                                0 -> "No se encontraron resultados"
-                                1 -> "Aún no tienes favoritos"
-                                2 -> "No hay libros en '${when(selectedStatus) {
+                                0 -> "Explora la biblioteca para ver libros aquí"
+                                1 -> "No se encontraron resultados"
+                                2 -> "Aún no tienes favoritos"
+                                3 -> "No hay libros en '${when(selectedStatus) {
                                     BookStatus.POR_LEER -> "Por leer"
                                     BookStatus.LEYENDO -> "Leyendo"
                                     BookStatus.TERMINADO -> "Terminados"

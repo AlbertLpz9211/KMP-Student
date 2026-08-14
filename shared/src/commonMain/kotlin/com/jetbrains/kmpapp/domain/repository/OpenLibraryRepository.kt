@@ -10,6 +10,7 @@ interface OpenLibraryRepository {
     fun getDetail(id: String): Flow<Result<ItemDetalle>>
     fun getFavorites(): Flow<List<Item>>
     fun getMyBooks(): Flow<List<Item>>
+    fun getAllItems(): Flow<List<Item>>
     suspend fun toggleFavorite(id: String, isFavorite: Boolean)
     suspend fun updateBookStatus(id: String, status: BookStatus)
 }

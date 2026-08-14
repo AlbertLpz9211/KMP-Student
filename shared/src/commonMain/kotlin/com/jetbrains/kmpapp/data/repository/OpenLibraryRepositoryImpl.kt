@@ -80,4 +80,8 @@ class OpenLibraryRepositoryImpl(
     override fun getMyBooks(): Flow<List<Item>> {
         return localDataSource.getMyBooks()
     }
+
+    override fun getAllItems(): Flow<List<Item>> {
+        return localDataSource.getItems()
+    }
 }

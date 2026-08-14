@@ -5,6 +5,7 @@ import com.jetbrains.kmpapp.data.remote.OpenLibraryApi
 import com.jetbrains.kmpapp.data.repository.OpenLibraryRepositoryImpl
 import com.jetbrains.kmpapp.db.OpenLibraryDatabase
 import com.jetbrains.kmpapp.domain.repository.OpenLibraryRepository
+import com.jetbrains.kmpapp.domain.usecase.GetAllItemsUseCase
 import com.jetbrains.kmpapp.domain.usecase.GetFavoritesUseCase
 import com.jetbrains.kmpapp.domain.usecase.GetItemDetailUseCase
 import com.jetbrains.kmpapp.domain.usecase.GetMyBooksUseCase
@@ -32,6 +33,7 @@ val commonModule = module {
 
     // Use Cases
     factory { SearchItemsUseCase(get()) }
+    factory { GetAllItemsUseCase(get()) }
     factory { GetItemDetailUseCase(get()) }
     factory { GetFavoritesUseCase(get()) }
     factory { GetMyBooksUseCase(get()) }

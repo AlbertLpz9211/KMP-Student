@@ -3,6 +3,7 @@ package com.jetbrains.kmpapp.screens.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jetbrains.kmpapp.domain.model.Item
+import com.jetbrains.kmpapp.domain.usecase.GetAllItemsUseCase
 import com.jetbrains.kmpapp.domain.usecase.GetFavoritesUseCase
 import com.jetbrains.kmpapp.domain.usecase.GetMyBooksUseCase
 import com.jetbrains.kmpapp.domain.usecase.SearchItemsUseCase
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.stateIn
 @OptIn(ExperimentalCoroutinesApi::class)
 class ListViewModel(
     searchItemsUseCase: SearchItemsUseCase,
+    getAllItemsUseCase: GetAllItemsUseCase,
     getFavoritesUseCase: GetFavoritesUseCase,
     getMyBooksUseCase: GetMyBooksUseCase
 ) : ViewModel() {
@@ -29,6 +31,9 @@ class ListViewModel(
                 result.getOrDefault(emptyList())
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val allItems: StateFlow<List<Item>> = getAllItemsUseCase()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val favorites: StateFlow<List<Item>> = getFavoritesUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
