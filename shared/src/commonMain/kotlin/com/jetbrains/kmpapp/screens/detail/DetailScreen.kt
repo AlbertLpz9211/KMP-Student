@@ -62,7 +62,12 @@ fun DetailScreen(
                 }
             )
         } else {
-            EmptyScreenContent(Modifier.fillMaxSize())
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
         }
     }
 }

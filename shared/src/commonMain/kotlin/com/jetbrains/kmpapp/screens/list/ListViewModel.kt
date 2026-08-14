@@ -23,7 +23,7 @@ class ListViewModel(
     getFavoritesUseCase: GetFavoritesUseCase,
     getMyBooksUseCase: GetMyBooksUseCase
 ) : ViewModel() {
-    private val _query = MutableStateFlow("Kotlin")
+    private val _query = MutableStateFlow("")
 
     val items: StateFlow<List<Item>> =
         _query.flatMapLatest { q ->

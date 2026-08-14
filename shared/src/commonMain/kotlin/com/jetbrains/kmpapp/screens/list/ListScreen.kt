@@ -98,7 +98,7 @@ fun ListScreen(
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
             if (selectedTab == 1) {
-                var searchText by remember { mutableStateOf("Kotlin") }
+                var searchText by remember { mutableStateOf("") }
                 OutlinedTextField(
                     value = searchText,
                     onValueChange = { 
