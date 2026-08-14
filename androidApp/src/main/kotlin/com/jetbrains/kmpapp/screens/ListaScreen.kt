@@ -93,7 +93,7 @@ fun ListaScreen(
         PullToRefreshBox(
             isRefreshing = state.cargando && state.items.isNotEmpty(),
             onRefresh = { viewModel.onQueryChange(state.query) },
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.weight(1f).fillMaxWidth(),
             state = rememberPullToRefreshState()
         ) {
             when {

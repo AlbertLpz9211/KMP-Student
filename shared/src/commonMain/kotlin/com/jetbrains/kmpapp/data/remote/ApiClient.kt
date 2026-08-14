@@ -20,7 +20,7 @@ class ApiClient(private val client: HttpClient) {
         return try {
             val response: ITunesResponseDto = client.get("https://itunes.apple.com/search") {
                 parameter("term", query)
-                parameter("limit", 25)
+                parameter("limit", 50)
             }.body()
             
             Resultado.Exito(response.results)

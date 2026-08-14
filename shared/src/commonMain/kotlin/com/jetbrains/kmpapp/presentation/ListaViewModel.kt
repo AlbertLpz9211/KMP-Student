@@ -33,14 +33,18 @@ class ListaViewModel(
     private var searchJob: Job? = null
 
     init {
-        // Observamos el catálogo local continuamente
-        repository.observarCatalogo()
-            .onEach { items ->
-                _state.update { it.copy(items = items) }
+        // Observamos el catálogo local y lo filtramos por la query actual
+        combine(repository.observarCatalogo(), _query) { items, q ->
+            if (q.isBlank()) items
+            else items.filter { 
+                it.titulo.contains(q, ignoreCase = true) || 
+                it.subtitulo?.contains(q, ignoreCase = true) == true 
             }
-            .launchIn(viewModelScope)
+        }.onEach { filteredItems ->
+            _state.update { it.copy(items = filteredItems) }
+        }.launchIn(viewModelScope)
 
-        // Lógica de búsqueda con debounce
+        // Lógica de búsqueda con debounce para descargar de la red
         _query
             .debounce(300L)
             .distinctUntilChanged()
