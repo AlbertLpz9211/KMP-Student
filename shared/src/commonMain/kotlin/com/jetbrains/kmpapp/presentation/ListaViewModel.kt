@@ -49,6 +49,9 @@ class ListaViewModel(
                 ejecutarBusqueda(q)
             }
             .launchIn(viewModelScope)
+
+        // Búsqueda inicial por defecto
+        onQueryChange("rock")
     }
 
     fun onQueryChange(q: String) {

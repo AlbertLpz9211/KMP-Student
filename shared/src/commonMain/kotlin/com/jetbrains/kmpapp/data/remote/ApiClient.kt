@@ -25,6 +25,8 @@ class ApiClient(private val client: HttpClient) {
             
             Resultado.Exito(response.results)
         } catch (e: Exception) {
+            // Logueamos el error completo para debuggear problemas silenciosos (como fallos de parseo)
+            e.printStackTrace()
             Resultado.Error(mapError(e))
         }
     }

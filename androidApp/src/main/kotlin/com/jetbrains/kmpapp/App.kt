@@ -11,9 +11,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.jetbrains.kmpapp.presentation.DetalleScreen
-import com.jetbrains.kmpapp.presentation.ListaScreen
+import com.jetbrains.kmpapp.screens.DetalleScreen
 import kotlinx.serialization.Serializable
+import com.jetbrains.kmpapp.screens.ListaScreen
 
 @Serializable
 object ListDestination

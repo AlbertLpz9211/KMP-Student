@@ -6,7 +6,10 @@ import com.jetbrains.kmpapp.data.remote.ApiClient
 import com.jetbrains.kmpapp.domain.model.Item
 import com.jetbrains.kmpapp.domain.model.Resultado
 import com.jetbrains.kmpapp.domain.repository.ItemRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
 class ItemRepositoryImpl(
     private val apiClient: ApiClient,
@@ -23,17 +26,17 @@ class ItemRepositoryImpl(
         return localDataSource.getAllItems()
     }
 
-    override suspend fun buscar(query: String): Resultado<Unit> {
+    override suspend fun buscar(query: String): Resultado<Unit> = withContext(Dispatchers.IO) {
         val ultimaActualizacion = localDataSource.getUltimaActualizacion(query)
         
-        return if (debeActualizar(ultimaActualizacion)) {
+        if (debeActualizar(ultimaActualizacion)) {
             fetchFromNetwork(query)
         } else {
             Resultado.Exito(Unit)
         }
     }
 
-    override suspend fun alternarFavorito(id: String) {
+    override suspend fun alternarFavorito(id: String) = withContext(Dispatchers.IO) {
         val esFavorito = localDataSource.isFavorito(id)
         localDataSource.setFavorito(id, !esFavorito)
     }

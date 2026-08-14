@@ -1,6 +1,7 @@
-package com.jetbrains.kmpapp.presentation
+package com.jetbrains.kmpapp.screens
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,6 +33,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.jetbrains.kmpapp.domain.model.Item
+import com.jetbrains.kmpapp.presentation.ListaViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,7 +88,7 @@ fun ListaScreen(
 }
 
 @Composable
-private fun ItemRow(item: com.jetbrains.kmpapp.domain.model.Item, onClick: () -> Unit) {
+private fun ItemRow(item: Item, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -121,7 +124,7 @@ private fun ErrorState(mensaje: String, onRetry: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
+        verticalArrangement = Arrangement.Center
     ) {
         Icon(
             imageVector = Icons.Default.Refresh,

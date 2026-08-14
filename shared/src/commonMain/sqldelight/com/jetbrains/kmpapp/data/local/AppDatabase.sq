@@ -1,0 +1,34 @@
+CREATE TABLE FavoritoEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    titulo TEXT NOT NULL,
+    subtitulo TEXT,
+    imagenUrl TEXT,
+    metrica REAL,
+    fecha TEXT,
+    tags TEXT -- Guardaremos los tags como un string separado por comas
+);
+
+insertarFavorito:
+INSERT OR REPLACE INTO FavoritoEntity(id, titulo, subtitulo, imagenUrl, metrica, fecha, tags)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+eliminarFavorito:
+DELETE FROM FavoritoEntity WHERE id = ?;
+
+seleccionarTodosLosFavoritos:
+SELECT * FROM FavoritoEntity;
+
+seleccionarFavoritoPorId:
+SELECT * FROM FavoritoEntity WHERE id = ?;
+
+CREATE TABLE BusquedaMetadata (
+    query TEXT NOT NULL PRIMARY KEY,
+    ultimaActualizacion INTEGER NOT NULL
+);
+
+marcarActualizacion:
+INSERT OR REPLACE INTO BusquedaMetadata(query, ultimaActualizacion)
+VALUES (?, ?);
+
+obtenerUltimaActualizacion:
+SELECT ultimaActualizacion FROM BusquedaMetadata WHERE query = ?;

@@ -1,6 +1,8 @@
 package com.jetbrains.kmpapp.di
 
+import com.jetbrains.kmpapp.data.local.DriverFactory
 import com.jetbrains.kmpapp.data.local.ItemLocalDataSource
+import com.jetbrains.kmpapp.data.local.MyDatabase
 import com.jetbrains.kmpapp.data.local.SqlDelightItemLocalDataSource
 import com.jetbrains.kmpapp.data.mapper.ApiMapper
 import com.jetbrains.kmpapp.data.remote.ApiClient
@@ -10,6 +12,7 @@ import com.jetbrains.kmpapp.presentation.DetalleViewModel
 import com.jetbrains.kmpapp.presentation.ListaViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.http.ContentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.core.context.startKoin
@@ -23,7 +26,12 @@ val commonModule = module {
     single {
         HttpClient {
             install(ContentNegotiation) {
-                json(Json { ignoreUnknownKeys = true })
+                val json = Json {
+                    ignoreUnknownKeys = true
+                    isLenient = true
+                }
+                json(json)
+                json(json, contentType = ContentType.Text.JavaScript)
             }
         }
     }
@@ -31,7 +39,12 @@ val commonModule = module {
     singleOf(::ApiClient)
     singleOf(::ApiMapper)
     
-    single<ItemLocalDataSource> { SqlDelightItemLocalDataSource() }
+    single {
+        val driver = get<DriverFactory>().createDriver()
+        MyDatabase(driver)
+    }
+
+    single<ItemLocalDataSource> { SqlDelightItemLocalDataSource(get()) }
     
     single<ItemRepository> { 
         ItemRepositoryImpl(get(), get(), get(), { 
